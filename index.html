@@ -1,0 +1,4635 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>101备考系统</title>
+  <style>
+    body {
+        font-family: 'Microsoft YaHei', Arial, sans-serif;
+        line-height: 1.6;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f0f4f8;
+        color: #333;
+        transition: all 0.3s ease;
+    }
+    .container {
+        background-color: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow: hidden;
+    }
+    .container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(90deg, #3498db, #2ecc71);
+    }
+    h1 {
+        text-align: center;
+        color: #2c3e50;
+        margin-bottom: 30px;
+        font-size: 2.2rem;
+        font-weight: 600;
+        position: relative;
+        padding-bottom: 15px;
+    }
+    h1::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 3px;
+        background: linear-gradient(90deg, #3498db, #2ecc71);
+    }
+    h2 {
+        color: #2c3e50;
+        margin-bottom: 20px;
+        font-weight: 500;
+    }
+    .question {
+        margin-bottom: 30px;
+        padding: 20px;
+        border-radius: 10px;
+        background-color: #ffffff;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        border-left: 4px solid #3498db;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .question:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    .question-title {
+        font-weight: bold;
+        margin-bottom: 15px;
+        color: #2c3e50;
+        font-size: 1.1rem;
+        line-height: 1.5;
+    }
+    .options {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .option {
+        margin-left: 5px;
+        padding: 8px 10px;
+        border-radius: 6px;
+        transition: background-color 0.2s;
+    }
+    .option:hover {
+        background-color: #f7f9fc;
+    }
+    .option label {
+        cursor: pointer;
+        display: inline-block;
+        width: 100%;
+    }
+    .option input[type="radio"] {
+        margin-right: 10px;
+        transform: scale(1.2);
+    }
+    .btn {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
+        border: none;
+        padding: 12px 25px;
+        border-radius: 50px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 500;
+        display: block;
+        margin: 25px auto;
+        transition: all 0.3s;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    .btn:hover {
+        background: linear-gradient(135deg, #2980b9, #3498db);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+    }
+    .btn:active {
+        transform: translateY(0);
+    }
+    .btn-secondary {
+        background: linear-gradient(135deg, #2ecc71, #27ae60);
+    }
+    .btn-secondary:hover {
+        background: linear-gradient(135deg, #27ae60, #2ecc71);
+    }
+    .btn-danger {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+    }
+    .btn-danger:hover {
+        background: linear-gradient(135deg, #c0392b, #e74c3c);
+    }
+    #results {
+        margin-top: 30px;
+        padding: 20px;
+        border-radius: 10px;
+        background-color: #ffffff;
+        box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+        display: none;
+    }
+    .result-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #f0f4f8;
+    }
+    .correct {
+        color: #27ae60;
+    }
+    .incorrect {
+        color: #e74c3c;
+    }
+    .filter-controls {
+        margin: 20px 0;
+        text-align: center;
+    }
+    .filter-btn {
+        background-color: #f7f9fc;
+        border: 1px solid #ddd;
+        padding: 8px 15px;
+        margin: 0 5px;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-weight: 500;
+    }
+    .filter-btn:hover {
+        background-color: #e6f0ff;
+    }
+    .filter-btn.active {
+        background-color: #3498db;
+        color: white;
+        border-color: #3498db;
+        box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+    }
+    .hidden {
+        display: none;
+    }
+    .status {
+        font-weight: bold;
+        margin-left: 10px;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+    }
+    .status.correct {
+        background-color: rgba(46, 204, 113, 0.15);
+    }
+    .status.incorrect {
+        background-color: rgba(231, 76, 60, 0.15);
+    }
+    .progress {
+        margin: 25px 0;
+        height: 8px;
+        background-color: #e6eef5;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    .progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, #3498db, #2ecc71);
+        width: 0;
+        transition: width 0.5s;
+        border-radius: 10px;
+    }
+    /* 密码保护和题目数量选择样式 */
+    .password-container, .mode-selection-container, .question-count-container {
+        text-align: center;
+        margin: 50px auto;
+        max-width: 500px;
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow: hidden;
+    }
+    .password-container::before, .mode-selection-container::before, .question-count-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(90deg, #3498db, #2ecc71);
+    }
+    .password-input, .question-count-input {
+        width: 100%;
+        padding: 15px;
+        font-size: 16px;
+        border: 2px solid #e6eef5;
+        border-radius: 8px;
+        margin: 15px 0;
+        transition: all 0.3s;
+        box-sizing: border-box;
+    }
+    .password-input:focus, .question-count-input:focus {
+        border-color: #3498db;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    }
+    .error-message {
+        color: #e74c3c;
+        margin-top: 15px;
+        display: none;
+        padding: 10px;
+        background-color: rgba(231, 76, 60, 0.1);
+        border-radius: 6px;
+        font-weight: 500;
+    }
+    /* 用时显示样式 */
+    #timer {
+        text-align: center;
+        font-size: 18px;
+        margin-bottom: 25px;
+        color: #2c3e50;
+        background: #f7f9fc;
+        padding: 10px;
+        border-radius: 30px;
+        font-weight: 500;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+    /* 模式选择样式 */
+    .mode-btn-container {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin: 30px 0;
+    }
+    .mode-btn {
+        padding: 15px 30px;
+        font-size: 18px;
+        border-radius: 10px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s;
+        width: 180px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        font-weight: 500;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+    .mode-btn i {
+        font-size: 24px;
+        margin-bottom: 5px;
+    }
+    .mode-btn.exam-mode {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
+    }
+    .mode-btn.practice-mode {
+        background: linear-gradient(135deg, #2ecc71, #27ae60);
+        color: white;
+    }
+    .mode-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 7px 20px rgba(0, 0, 0, 0.15);
+    }
+    .mode-btn:active {
+        transform: translateY(-1px);
+    }
+    /* 答案反馈样式 */
+    .answer-feedback {
+        margin-top: 10px;
+        padding: 12px;
+        border-radius: 8px;
+        font-weight: 500;
+        display: none;
+    }
+    .answer-feedback.correct {
+        background-color: rgba(46, 204, 113, 0.15);
+        color: #27ae60;
+        border-left: 4px solid #27ae60;
+    }
+    .answer-feedback.incorrect {
+        background-color: rgba(231, 76, 60, 0.15);
+        color: #e74c3c;
+        border-left: 4px solid #e74c3c;
+    }
+    /* 结果页面样式优化 */
+    .result-summary {
+        display: flex;
+        justify-content: space-around;
+        margin: 20px 0 30px;
+        padding: 20px;
+        background: #f7f9fc;
+        border-radius: 10px;
+    }
+    .result-item {
+        text-align: center;
+    }
+    .result-item .value {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #2c3e50;
+        display: block;
+        margin-bottom: 5px;
+    }
+    .result-item .label {
+        font-size: 0.9rem;
+        color: #7f8c8d;
+    }
+    /* 图标 */
+    .icon {
+        display: inline-block;
+        width: 24px;
+        height: 24px;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        vertical-align: middle;
+        margin-right: 8px;
+    }
+    /* 响应式设计 */
+    @media (max-width: 768px) {
+        body {
+            padding: 10px;
+        }
+        .container {
+            padding: 15px;
+        }
+        .mode-btn-container {
+            flex-direction: column;
+            align-items: center;
+        }
+        .result-summary {
+            flex-direction: column;
+            gap: 15px;
+        }
+    }
+    /* 高亮当前题目 */
+    .current-question {
+        border-left-color: #f39c12;
+        background-color: #fffcf5;
+    }
+    /* 选项选中后的样式 */
+    .option.selected {
+        background-color: #e6f0ff;
+        border-left: 3px solid #3498db;
+    }
+    /* 动画效果 */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in {
+        animation: fadeIn 0.5s ease forwards;
+    }
+    
+    /* 主题切换按钮 */
+    .theme-toggle {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        z-index: 1000;
+        transition: all 0.3s;
+    }
+    .theme-toggle:hover {
+        transform: scale(1.1);
+    }
+    
+    /* 暗色主题 */
+    body.dark-theme {
+        background-color: #1a1a2e;
+        color: #f0f0f0;
+    }
+    body.dark-theme .container,
+    body.dark-theme .question,
+    body.dark-theme #results,
+    body.dark-theme .password-container,
+    body.dark-theme .mode-selection-container,
+    body.dark-theme .question-count-container {
+        background-color: #16213e;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    }
+    body.dark-theme h1,
+    body.dark-theme h2,
+    body.dark-theme .question-title {
+        color: #f0f0f0;
+    }
+    body.dark-theme .option:hover {
+        background-color: #1f3156;
+    }
+    body.dark-theme .option.selected {
+        background-color: #1f3156;
+    }
+    body.dark-theme .password-input,
+    body.dark-theme .question-count-input {
+        background-color: #242c48;
+        border-color: #2a365c;
+        color: #f0f0f0;
+    }
+    body.dark-theme #timer {
+        background-color: #1f3156;
+        color: #f0f0f0;
+    }
+    body.dark-theme .filter-btn {
+        background-color: #242c48;
+        border-color: #2a365c;
+        color: #f0f0f0;
+    }
+    body.dark-theme .progress {
+        background-color: #242c48;
+    }
+  </style>
+  <!-- 添加一些图标 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+  <!-- 主题切换按钮 -->
+  <div class="theme-toggle" id="theme-toggle">
+    <i class="fas fa-moon"></i>
+  </div>
+
+  <!-- 密码保护层 -->
+  <div id="password-protection" class="password-container fade-in">
+      <h2><i class="fas fa-lock"></i> 请输入密码访问考试系统</h2>
+      <input type="password" id="password-input" class="password-input" placeholder="请输入密码" autofocus>
+      <button id="password-submit" class="btn"><i class="fas fa-sign-in-alt"></i> 提交</button>
+      <div id="error-message" class="error-message"><i class="fas fa-exclamation-circle"></i> 密码错误，请重试！</div>
+  </div>
+
+  <!-- 题库选择层 -->
+  <div id="subject-selection" class="mode-selection-container hidden fade-in">
+      <h2><i class="fas fa-book"></i> 请选择题库类型</h2>
+      <p>选择您要练习的科目</p>
+      <div class="mode-btn-container">
+          <button id="maogai-btn" class="mode-btn practice-mode">
+              <i class="fas fa-flag"></i>
+              毛概题库
+              <small>毛泽东思想和中国特色社会主义理论体系概论</small>
+          </button>
+          <button id="xigai-btn" class="mode-btn exam-mode">
+              <i class="fas fa-star"></i>
+              习概题库
+              <small>习近平新时代中国特色社会主义思想概论</small>
+          </button>
+          <button id="computer-btn" class="mode-btn practice-mode">
+              <i class="fas fa-microchip"></i>
+              计算机组成原理
+              <small>计算机硬件系统原理与设计</small>
+          </button>
+      </div>
+  </div>
+
+  <!-- 模式选择层 -->
+  <div id="mode-selection" class="mode-selection-container hidden fade-in">
+      <h2><i class="fas fa-tasks"></i> 请选择学习模式</h2>
+      <p>选择适合您的学习方式</p>
+      <div class="mode-btn-container">
+          <button id="practice-mode-btn" class="mode-btn practice-mode">
+              <i class="fas fa-book"></i>
+              练习模式
+              <small>做题后立即查看答案</small>
+          </button>
+          <button id="exam-mode-btn" class="mode-btn exam-mode">
+              <i class="fas fa-clipboard-check"></i>
+              考试模式
+              <small>提交后统一查看结果</small>
+          </button>
+      </div>
+  </div>
+
+  <!-- 题目数量选择层 -->
+  <div id="question-count-selection" class="question-count-container hidden fade-in">
+      <h2><i class="fas fa-list-ol"></i> 请选择题目数量</h2>
+      <p>题库总数：20题</p>
+      <input type="number" id="question-count-input" class="question-count-input" min="1" max="20" placeholder="请输入题目数量（1-20）" autofocus>
+      <button id="question-count-submit" class="btn"><i class="fas fa-play"></i> 开始练习</button>
+      <div id="count-error-message" class="error-message"><i class="fas fa-exclamation-circle"></i> 请输入有效的题目数量！</div>
+  </div>
+
+  <!-- 考试系统内容 -->
+  <div id="exam-content" class="hidden fade-in">
+      <div class="container">
+          <h1>101备考系统</h1>
+          
+          <!-- 显示当前模式 -->
+          <div id="current-mode" style="text-align: center; margin-bottom: 15px; font-weight: bold; color: #3498db;"></div>
+          
+          <!-- 显示作答用时 -->
+          <div id="timer"><i class="fas fa-clock"></i> 已用时: 00:00</div>
+          
+          <div class="progress">
+              <div class="progress-bar" id="progress-bar"></div>
+          </div>
+          
+          <div id="exam-form">
+              <!-- 题目由 JavaScript 动态生成 -->
+          </div>
+          
+          <button id="submit-btn" class="btn"><i class="fas fa-paper-plane"></i> 提交答案</button>
+          
+          <div id="results">
+              <div class="result-header">
+                  <h2><i class="fas fa-chart-pie"></i> 测试结果</h2>
+                  <div>
+                      <span id="score">0</span>/<span id="total">0</span>
+                      <span>正确率: <span id="accuracy">0%</span></span>
+                  </div>
+              </div>
+              
+              <!-- 结果统计卡片 -->
+              <div class="result-summary">
+                  <div class="result-item">
+                      <span class="value" id="summary-score">0</span>
+                      <span class="label">得分</span>
+                  </div>
+                  <div class="result-item">
+                      <span class="value" id="summary-total">0</span>
+                      <span class="label">总题数</span>
+                  </div>
+                  <div class="result-item">
+                      <span class="value" id="summary-accuracy">0%</span>
+                      <span class="label">正确率</span>
+                  </div>
+                  <div class="result-item">
+                      <span class="value" id="summary-time">00:00</span>
+                      <span class="label">用时</span>
+                  </div>
+              </div>
+              
+              <!-- 显示总作答用时 -->
+              <div id="final-time" style="text-align: center; font-size: 16px; margin-bottom: 15px;"></div>
+              
+              <div class="filter-controls">
+                  <button class="filter-btn active" data-filter="all"><i class="fas fa-list"></i> 全部题目</button>
+                  <button class="filter-btn" data-filter="incorrect"><i class="fas fa-times"></i> 错题复习</button>
+              </div>
+              
+              <div id="result-details">
+                  <!-- 结果详情由 JavaScript 动态生成 -->
+              </div>
+              
+              <div style="text-align: center; margin-top: 30px;">
+                  <button id="restart-btn" class="btn btn-secondary"><i class="fas fa-redo"></i> 重新测试</button>
+                  <button id="reselect-btn" class="btn"><i class="fas fa-cog"></i> 重新选择题库</button>
+                  <button id="retry-incorrect-btn" class="btn btn-danger"><i class="fas fa-times-circle"></i> 错题重新测试</button>
+              </div>
+          </div>
+      </div>
+  </div>
+
+  <script>
+      // 题库数据按科目分类
+      const questionBanks = {
+          maogai: [
+              {
+                  id: 1,
+                  question: "马克思主义是关于无产阶级和人类解放的科学",
+                  options: ["A. 正确", "B. 错误"],
+                  answer: "A"
+              },
+              {
+                  id: 2,
+                  question: "马克思主义产生的经济根源是：",
+                  options: ["A. 资本主义的产生和发展", "B. 工业革命", "C. 商品经济的发展", "D. 阶级斗争的激化"],
+                  answer: "A"
+              },
+              {
+                  id: 3,
+                  question: "马克思主义产生的阶级基础是：",
+                  options: ["A. 资产阶级", "B. 无产阶级", "C. 农民阶级", "D. 小资产阶级"],
+                  answer: "B"
+              },
+              {
+                  id: 4,
+                  question: "马克思主义的三个主要组成部分是：",
+                  options: ["A. 马克思主义哲学、马克思主义政治经济学、科学社会主义", "B. 历史唯物主义、剩余价值学说、无产阶级专政理论", "C. 唯物辩证法、政治经济学、共产主义理论", "D. 以上都不对"],
+                  answer: "A"
+              },
+              {
+                  id: 5,
+                  question: "实践是认识的基础，这体现在：",
+                  options: ["A. 实践是认识的来源", "B. 实践是认识发展的动力", "C. 实践是检验认识真理性的唯一标准", "D. 以上都是"],
+                  answer: "D"
+              },
+              {
+                  id: 6,
+                  question: "毛泽东思想是马克思列宁主义在中国的运用和发展",
+                  options: ["A. 正确", "B. 错误"],
+                  answer: "A"
+              },
+              {
+                  id: 7,
+                  question: "中国特色社会主义理论体系包括：",
+                  options: ["A. 邓小平理论", "B. '三个代表'重要思想", "C. 科学发展观", "D. 以上都是"],
+                  answer: "D"
+              },
+              {
+                  id: 8,
+                  question: "改革开放以来党的全部理论和实践的主题是：",
+                  options: ["A. 建设社会主义现代化国家", "B. 中国特色社会主义", "C. 全面建成小康社会", "D. 实现中华民族伟大复兴"],
+                  answer: "B"
+              },
+              {
+                  id: 9,
+                  question: "社会主义的根本任务是：",
+                  options: ["A. 解放生产力，发展生产力", "B. 实现共同富裕", "C. 建立社会主义市场经济", "D. 坚持四项基本原则"],
+                  answer: "A"
+              },
+              {
+                  id: 10,
+                  question: "中国特色社会主义最本质的特征是：",
+                  options: ["A. 人民当家作主", "B. 依法治国", "C. 中国共产党领导", "D. 以人民为中心"],
+                  answer: "C"
+              },
+              {
+                  id: 11,
+                  question: "马克思主义中国化的第一个重大理论成果是：",
+                  options: ["A. 毛泽东思想", "B. 邓小平理论", "C. 三个代表重要思想", "D. 科学发展观"],
+                  answer: "A"
+              },
+              {
+                  id: 12,
+                  question: "实事求是思想路线的基本内容是：",
+                  options: ["A. 一切从实际出发", "B. 理论联系实际", "C. 实事求是", "D. 以上都是"],
+                  answer: "D"
+              },
+              {
+                  id: 13,
+                  question: "社会主义初级阶段的基本国情是：",
+                  options: ["A. 我国仍处于并将长期处于社会主义初级阶段", "B. 我国已经进入社会主义中级阶段", "C. 我国即将进入共产主义社会", "D. 以上都不对"],
+                  answer: "A"
+              },
+              {
+                  id: 14,
+                  question: "社会主义市场经济体制的基本特征包括：",
+                  options: ["A. 坚持公有制的主体地位", "B. 以共同富裕为根本目标", "C. 能够实行强有力的宏观调控", "D. 以上都是"],
+                  answer: "D"
+              },
+              {
+                  id: 15,
+                  question: "马克思主义哲学的基本问题是：",
+                  options: ["A. 物质和意识的关系问题", "B. 理论和实践的关系问题", "C. 主观和客观的关系问题", "D. 个人和社会的关系问题"],
+                  answer: "A"
+              },
+              {
+                  id: 16,
+                  question: "马克思主义政治经济学的理论基石是：",
+                  options: ["A. 剩余价值学说", "B. 劳动价值论", "C. 阶级斗争理论", "D. 历史唯物主义"],
+                  answer: "B"
+              },
+              {
+                  id: 17,
+                  question: "科学社会主义的核心内容是：",
+                  options: ["A. 无产阶级专政理论", "B. 社会主义革命理论", "C. 共产主义社会理论", "D. 以上都是"],
+                  answer: "D"
+              },
+              {
+                  id: 18,
+                  question: "新民主主义革命的三大法宝是：",
+                  options: ["A. 统一战线、武装斗争、党的建设", "B. 理论联系实际、密切联系群众、批评与自我批评", "C. 实事求是、群众路线、独立自主", "D. 解放思想、实事求是、与时俱进"],
+                  answer: "A"
+              },
+              {
+                  id: 19,
+                  question: "社会主义改造的历史经验包括：",
+                  options: ["A. 坚持社会主义工业化建设与社会主义改造同时并举", "B. 采取积极引导、逐步过渡的方式", "C. 用和平的方法进行改造", "D. 以上都是"],
+                  answer: "D"
+              },
+              {
+                  id: 20,
+                  question: "毛泽东思想活的灵魂包括：",
+                  options: ["A. 实事求是、群众路线、独立自主", "B. 理论联系实际、密切联系群众、批评与自我批评", "C. 解放思想、实事求是、与时俱进", "D. 统一战线、武装斗争、党的建设"],
+                  answer: "A"
+              }
+          ],
+          xigai: [
+    {
+        "id": 1,
+        "question": "中国共产党为什么能，中国特色社会主义为什么好，归根到底是 （     ）。",
+        "options": ["A) 马克思主义行，是中国化时代化的马克思主义行", "B) 中国共产党能", "C) 中国特色社会主义好", "D) 靠坚持四项基本原则，不犯错误"],
+        "answer": "A"
+    },
+    {
+        "id": 2,
+        "question": "（     ），就是坚信中国特色社会主义道路是我国实现社会主义现代化、创造人民美好生活的必由之路。",
+        "options": ["A) 坚定道路自信", "B) 坚定理论自信", "C) 坚定制度自信", "D) 坚定文化自信"],
+        "answer": "A"
+    },
+    {
+        "id": 3,
+        "question": "党的 （     ） 是国家的生命线、人民的幸福线。",
+        "options": ["A) 基本路线", "B) 基本方略", "C) 基本理论", "D) 基本战略"],
+        "answer": "A"
+    },
+    {
+        "id": 4,
+        "question": "中国特色社会主义事业总体布局是（ ）。",
+        "options": ["A) “五位一体”", "B) “四个全面”", "C) “ 十个明确”", "D) “一国两制”"],
+        "answer": "A"
+    },
+    {
+        "id": 5,
+        "question": "（     ）是当代中国发展进步的根本制度保障，具有明显制度优势。",
+        "options": ["A) 中国特色社会主义制度", "B) 中国特色社会主义经济制度", "C) 中国特色社会主义理论体系", "D) 中国特色社会主义道路"],
+        "answer": "A"
+    },
+    {
+        "id": 6,
+        "question": "不属于党的十九届五中全会赋予“四个全面”战略布局新内涵的是 （     ）。",
+        "options": ["A) 全面依法治国", "B) 全面建成小康社会", "C) 全面从严治党", "D) 全面深化改革"],
+        "answer": "B"
+    },
+    {
+        "id": 7,
+        "question": "中国特色社会主义进入新时代，是我国（     ）发生新变化的反映。",
+        "options": ["A) 社会基本矛盾", "B) 社会主要矛盾", "C) 社会主义革命", "D) 国内阶级斗争"],
+        "answer": "B"
+    },
+    {
+        "id": 8,
+        "question": "（     ）各方面相互联系、相互促进、不可分割，共同构筑起中国特色社会主义事业的全局。",
+        "options": ["A) “四个全面”", "B) “十四个坚持”", "C) “十三个方面成就”", "D) “五位一体”"],
+        "answer": "D"
+    },
+    {
+        "id": 9,
+        "question": "当前，我国社会生产力水平总体上显著提高，社会生产能力在很多方面进入世界前列，更加突出的问题是发展的 （     ）。",
+        "options": ["A) 速度过高", "B) 不平衡不充分", "C) 停滞", "D) 波动性突出"],
+        "answer": "B"
+    },
+    {
+        "id": 10,
+        "question": "中国特色社会主义道路自信、理论自信、制度自信、文化自信，是 （     ）。",
+        "options": ["A) 来源于实践", "B) 来源于人民", "C) 来源于真理", "D) 来源于发展"],
+        "answer": "A B C"
+    },
+    {
+        "id": 11,
+        "question": "（     ）“四个全面”战略布局，是新的时代条件下坚持和发展中国特色社会主义、推进改革开放和社会主义现代化建设的战略抉择。",
+        "options": ["A) 全面建设社会主义现代化国家", "B) 全面深化改革", "C) 全面依法治国", "D) 全面从严治党"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 12,
+        "question": "下列关于党的十八大以来，在坚持党的全面领导上相关表述正确的有： （     ）。",
+        "options": ["A) 中央权威和集中统一领导得到有力保证", "B) 党的领导制度体系不断完善", "C) 领导方式更加科学", "D) 思想上更加统一"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 13,
+        "question": "中国特色社会主义是科学社会主义理论逻辑与中国社会发展历史逻辑的辩证统一，这条道路（    ），不仅走得对、走得通，而且走得稳、走得好。",
+        "options": ["A) 符合中国实际", "B) 反映中国人民意愿", "C) 适应时代发展要求", "D) 顺应计划经济要求"],
+        "answer": "A B C"
+    },
+    {
+        "id": 14,
+        "question": "新时代坚持和发展中国特色社会主义，必须坚定 （     ）。",
+        "options": ["A) 道路自信", "B) 理论自信", "C) 制度自信", "D) 文化自信"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 15,
+        "question": "新时代要全面贯彻党的 （     ），统筹推进“五位一体”总体布局和协调推进“四个全面”战略布局，谱写新时代中国特色社会主义更加绚丽的华章。",
+        "options": ["A) 基本理论", "B) 基本路线", "C) 基本方略", "D) 基本战略"],
+        "answer": "A B C"
+    },
+    {
+        "id": 16,
+        "question": "进入新时代，是中国特色社会主义的新时代，而不是别的什么新时代。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 17,
+        "question": "中国特色社会主义，既坚持了科学社会主义基本原则，又根据时代条件赋予其鲜明的中国特色。这就是说，中国特色社会主义是社会主义，不是别的什么主义。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 18,
+        "question": "中国特色社会主义具有深厚的历史渊源和广泛的现实基础，是实现中华民族伟大复兴的正确道路。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 19,
+        "question": "新时代我国社会主要矛盾的变化，已改变对我国社会主义所处历史阶段的判断。",
+        "options": ["A) √", "B) ×"],
+        "answer": "B"
+    },
+    {
+        "id": 20,
+        "question": "中国特色社会主义思想是实现途径，理论体系是行动指南，文化是根本保障，制度是精神力量，四者统一于中国特色社会主义伟大实践。",
+        "options": ["A) √", "B) ×"],
+        "answer": "B"
+    },
+    {
+        "id": 21,
+        "question": "坚持党的基本理论，就是要坚定马克思主义信仰，坚持马克思主义指导地位，坚持不懈用习近平新时代中国特色社会主义思想凝心铸魂，用党的基本理论指导实践、推动工作。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 22,
+        "question": "（   ）第一次使用了“小康”概念，还提出“小康社会”的概念。",
+        "options": ["A) 毛泽东", "B) 周恩来", "C) 邓小平", "D) 江泽民"],
+        "answer": "C"
+    },
+    {
+        "id": 23,
+        "question": "习近平指出，中华民族近代以来最伟大的梦想是（   ）",
+        "options": ["A) 国家富强", "B) 民族独立、人民解放", "C) 人民富裕", "D) 实现中华民族伟大复兴"],
+        "answer": "D"
+    },
+    {
+        "id": 24,
+        "question": "习近平曾提到，（   ）直接关系中国式现代化的根本方向、前途命运、最终成败。",
+        "options": ["A) 文化繁荣", "B) 改革开放", "C) 党的领导", "D) 经济发展"],
+        "answer": "C"
+    },
+    {
+        "id": 25,
+        "question": "（   ）是中国式现代化区别于西方现代化的显著标志。",
+        "options": ["A) 守正创新", "B) 人口规模巨大", "C) 改革开放", "D) 全体人民共同富裕"],
+        "answer": "D"
+    },
+    {
+        "id": 26,
+        "question": "党的二十大集中概括了中国式现代化（ ）个方面的中国特色，深刻揭示了中国式现代化的科学内涵，这是理论概括，也是实践要求。",
+        "options": ["A) 三", "B) 四", "C) 五", "D) 六"],
+        "answer": "C"
+    },
+    {
+        "id": 27,
+        "question": "关于中国式现代化，以下说法不正确的是（   ）。",
+        "options": ["A) 是中国共产党领导的社会主义现代化", "B) 既有各国现代化的特征", "C) 更有基于自己国情的中国特色", "D) 应该遵循西方现代化模式"],
+        "answer": "D"
+    },
+    {
+        "id": 28,
+        "question": "（        ）的《建国方略》被称为近代中国谋求现代化的第一份蓝图。",
+        "options": ["A) 鲁迅", "B) 孙中山", "C) 周恩来", "D) 邓小平"],
+        "answer": "B"
+    },
+    {
+        "id": 29,
+        "question": "中国式现代化坚持独立自主、自力更生，依靠（ ）的辛勤劳动和创造发展壮大自己。",
+        "options": ["A) 工人阶级", "B) 全体人民", "C) 农民", "D) 知识分子"],
+        "answer": "B"
+    },
+    {
+        "id": 30,
+        "question": "如期全面建成小康社会，兑现了党向人民、向历史作出的庄严承诺，践行了党（ ）的初心使命",
+        "options": ["A) 为中国人民谋幸福", "B) 为全体人民谋利益", "C) 为中华民族谋复兴", "D) 为中华儿女谋生存"],
+        "answer": "A C"
+    },
+    {
+        "id": 31,
+        "question": "党的领导决定中国式现代化的根本性质，党的（   ）决定了中国式现代化是社会主义现代化而不是别的什么现代化。",
+        "options": ["A) 性质宗旨", "B) 初心使命", "C) 信仰信念", "D) 政策主张"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 32,
+        "question": "关于中国梦的理解，以下说法正确的是（ ）",
+        "options": ["A) 要让每个人获得发展自我和奉献社会的机会", "B) 共同享有人生出彩的机会", "C) 共同享有梦想成真的机会", "D) 共同享有同祖国和时代一起成长与进步的机会"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 33,
+        "question": "中国式现代化是强国建设、民族复兴的唯一正确道路。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 34,
+        "question": "中国式现代化打破了“现代化=西方化”的迷思，展现了不同于西方现代化的新图景。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 35,
+        "question": "习近平指出：“中国梦的本质是国家富强、民族复兴、人民富裕。”",
+        "options": ["A) √", "B) ×"],
+        "answer": "B"
+    },
+    {
+        "id": 36,
+        "question": "中国共产党团结带领中国人民追求民族复兴的历史，也是一部不断探索现代化道路的历史。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 37,
+        "question": "打赢脱贫攻坚战使1亿人摆脱贫困，几千年来困扰我国人民的相对贫困问题一去不复返，大大提升了人类社会整体发展水平。",
+        "options": ["A) √", "B) ×"],
+        "answer": "B"
+    },
+    {
+        "id": 38,
+        "question": "坚持党总揽全局、协调各方的领导核心地位，是党作为最高（   ）在治国理政中的必然要求。",
+        "options": ["A) 行动组织", "B) 思想力量", "C) 团体力量", "D) 政治力量"],
+        "answer": "D"
+    },
+    {
+        "id": 39,
+        "question": "中国共产党以马克思主义作为行动指南，在实践中不断推进（   ），为坚持和完善中国特色社会主义制度提供强大理论优势。",
+        "options": ["A) 改革开放", "B) 马克思主义中国化时代化", "C) 人类命运共同体", "D) 人民共同富裕"],
+        "answer": "B"
+    },
+    {
+        "id": 40,
+        "question": "只有坚持党的领导，才能使党自身的优势充分彰显，不断转化为（ ）和国家治理效能。",
+        "options": ["A) 先进生产力", "B) 中国特色社会主义制度优势", "C) 中国特色社会主义文化优势", "D) 中国特色社会主义理论优势"],
+        "answer": "B"
+    },
+    {
+        "id": 41,
+        "question": "党的领导是（   ），必须落实到国家治理各领域各方面各环节。",
+        "options": ["A) 全面的、协调的、高效的", "B) 全面的、系统的、整体的", "C) 全面的、协调的、开放的", "D) 全面的、系统的、长效的"],
+        "answer": "B"
+    },
+    {
+        "id": 42,
+        "question": "党领导人民大力推进社会主义民主政治建设，人民依法享有（   ）的民主，真正成为国家、社会和自己命运的主人。",
+        "options": ["A) 广泛、直接、高效", "B) 广泛、充分、真实", "C) 系统、稳定、自由", "D) 系统、精准、长效"],
+        "answer": "B"
+    },
+    {
+        "id": 43,
+        "question": "习近平指出：“一定要认清，中国最大的国情就是（ ）。什么是中国特色？这就是中国特色。”",
+        "options": ["A) 人口14亿", "B) 人均GDP世界第二", "C) 中国共产党的领导", "D) 吃饭是个山大的问题"],
+        "answer": "C"
+    },
+    {
+        "id": 44,
+        "question": "（   ）是实现社会主义现代化和民族复兴的最根本保证。",
+        "options": ["A) 全面依法治国", "B) 进行伟大斗争", "C) 坚持中国特色社会主义", "D) 中国共产党的领导"],
+        "answer": "D"
+    },
+    {
+        "id": 45,
+        "question": "历史和现实都证明，中国人民和中华民族之所以能够扭转近代以后的历史命运、取得今天的伟大成就，最根本的是（   ）。",
+        "options": ["A) 有中国共产党的坚强领导", "B) 以新发展理念引领高质量发展", "C) 坚持四项基本原则", "D) 坚持两个“毫不动摇”"],
+        "answer": "A"
+    },
+    {
+        "id": 46,
+        "question": "党中央的权威首先体现在（   ）能够不折不扣得到贯彻执行。",
+        "options": ["A) 党的初心使命", "B) 党的理论和路线方针政策", "C) 党的理想信念", "D) 党的思想觉悟"],
+        "answer": "B"
+    },
+    {
+        "id": 47,
+        "question": "中国特色社会主义制度是一个严密完整的科学制度体系，其中具有统领地位的是（   ）",
+        "options": ["A) 人民代表大会制度", "B) 社会主义市场经济体制", "C) 党领导的多党合作和政治协商制度", "D) 党的领导制度"],
+        "answer": "D"
+    },
+    {
+        "id": 48,
+        "question": "党的（    ）是党的领导决策核心。",
+        "options": ["A) 中央委员会", "B) 中央政治局", "C) 中央政治局常委会", "D) 中央纪律检查委员会"],
+        "answer": "A B C"
+    },
+    {
+        "id": 49,
+        "question": "关于确立习近平同志党中央的核心、全党的核心地位，以下说法正确的是（   ）。",
+        "options": ["A) 是党的十八大以来的重大政治成果和宝贵经验", "B) 是党的二十大以来的重大的政治成果和宝贵经验", "C) 是历史和人民的共同选择、郑重选择、必然选择", "D) 是推翻三座大山、实现民族独立、人民解放的必然选择"],
+        "answer": "A C"
+    },
+    {
+        "id": 50,
+        "question": "坚持党作为最高政治领导力量，（    ）",
+        "options": ["A) 是国家和民族兴旺发达的根本所在", "B) 是全国各族人民幸福安康的根本所在", "C) 对于实现中华民族伟大复兴具有根本性意义", "D) 是世界各国前途命运所在"],
+        "answer": "A B C"
+    },
+    {
+        "id": 51,
+        "question": "党的（    ）赋予中国特色社会主义事业以信仰的力量、真理的力量、团结奋斗的力量，决定着中国特色社会主义事业的前途命运。",
+        "options": ["A) 自我革命", "B) 性质宗旨", "C) 理想信念", "D) 初心使命"],
+        "answer": "B C D"
+    },
+    {
+        "id": 52,
+        "question": "中国特色社会主义之所以是社会主义，究其根本就在于（   ）。",
+        "options": ["A) 坚持科学社会主义基本原则", "B) 坚持改革开放", "C) 坚持以经济建设为中心", "D) 坚持中国共产党的领导"],
+        "answer": "A D"
+    },
+    {
+        "id": 53,
+        "question": "西方政治制度包含（   ）弊端。",
+        "options": ["A) 议而不决", "B) 决而不行", "C) 相互掣肘", "D) 效率低下"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 54,
+        "question": "办好中国的事情关键在党，实现中华民族伟大复兴关键在党。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 55,
+        "question": "党中央决定的事、党中央的决策部署，不是所有党组织和党员都必须坚决执行。",
+        "options": ["A) √", "B) ×"],
+        "answer": "B"
+    },
+    {
+        "id": 56,
+        "question": "党是最高政治领导力量，这是由国家性质所决定的，是由国家宪法所确立的，是被中国革命、建设、改革伟大实践所证明的，是推进伟大事业的根本保证。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 57,
+        "question": "维护党中央权威和集中统一领导，同坚持党的民主集中制是完全一致的。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 58,
+        "question": "维护党中央权威和集中统一领导，是一个成熟的马克思主义执政党的重大建党原则。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 59,
+        "question": "党代表最广大人民的根本利益，这就要求党必须始终坚持（   ）。",
+        "options": ["A) 解放思想，实事求是", "B) 全心全意为人民服务的宗旨", "C) 一切从实际出发", "D) 以经济建设为中心"],
+        "answer": "B"
+    },
+    {
+        "id": 60,
+        "question": "（   ）是最大的政治，决定事业兴衰成败。",
+        "options": ["A) 改革", "B) 群众", "C) 民主", "D) 民心"],
+        "answer": "D"
+    },
+    {
+        "id": 61,
+        "question": "（   ）关系到党的生死存亡、兴旺发达。",
+        "options": ["A) 加强党的建设", "B) 保持党同人民群众的血肉联系", "C) 永葆党的纯洁性", "D) 永葆党的先进性"],
+        "answer": "B"
+    },
+    {
+        "id": 62,
+        "question": "我们党的最大（   ）是密切联系群众，党执政后的最大危险是脱离群众。",
+        "options": ["A) 领导优势", "B) 成果业绩", "C) 政治优势", "D) 工作成就"],
+        "answer": "C"
+    },
+    {
+        "id": 63,
+        "question": "《共产党宣言》确立了马克思会主义政党的最高目标是实现共产主义，并把实现（   ）作为共产主义的本质特征。",
+        "options": ["A) 认识实践", "B) 城乡差别消失", "C) 人的自由而全面发展", "D) 独立自主"],
+        "answer": "C"
+    },
+    {
+        "id": 64,
+        "question": "让群众满意是中国共产党做好一切工作的（   ）和根本标准。",
+        "options": ["A) 自我革命密码", "B) 领导力量", "C) 价值取向", "D) 思考方式"],
+        "answer": "C"
+    },
+    {
+        "id": 65,
+        "question": "（   ）是党的工作的最高裁决者和最终评判者。",
+        "options": ["A) 领导干部", "B) 检察院", "C) 人民", "D) 法院审判庭"],
+        "answer": "C"
+    },
+    {
+        "id": 66,
+        "question": "（   ）是党执政的最大底气，也是党执政最深厚的根基。",
+        "options": ["A) 人民", "B) 实现共产主义理想", "C) 物质基础雄厚", "D) 改革"],
+        "answer": "A"
+    },
+    {
+        "id": 67,
+        "question": "推动全体人民共同富裕与促进（   ）是高度统一的。",
+        "options": ["A) 大部分人满意", "B) 所有人满意", "C) 人的全面发展", "D) 中国式现代化"],
+        "answer": "C"
+    },
+    {
+        "id": 68,
+        "question": "中国共产党区别于其他政党的显著标志是（   ）。",
+        "options": ["A) 自由主义", "B) 科学立场", "C) 人民立场", "D) 实事求是"],
+        "answer": "C"
+    },
+    {
+        "id": 69,
+        "question": "坚持以人民为中心的发展思想，体现了党的（   ），也是对党的奋斗历程和实践经验的深刻总结。",
+        "options": ["A) 理想信念", "B) 性质宗旨", "C) 初心使命", "D) 政治意识"],
+        "answer": "A B C"
+    },
+    {
+        "id": 70,
+        "question": "人民群众是共产党的安身立命之本，共产党人永远不能（   ）。",
+        "options": ["A) 脱离群众", "B) 轻视群众", "C) 贴近群众", "D) 漠视群众疾苦"],
+        "answer": "A B D"
+    },
+    {
+        "id": 71,
+        "question": "坚持以人民为中心的发展思想，就是要做到（   ）。",
+        "options": ["A) 维护人民根本利益", "B) 增进民生福祉", "C) 发展为了人民、发展依靠人民、发展成果由人民共享", "D) 让现代化建设成果更多更公平惠及全体人民"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 72,
+        "question": "习近平指出：“检验我们一切工作的成效，最终都要看（   ）。”",
+        "options": ["A) 人民是否真正得到了实惠", "B) 人民生活是否真正得到了改善", "C) 人民权益是否真正得到了保障", "D) 国际社会是否认可"],
+        "answer": "A B C"
+    },
+    {
+        "id": 73,
+        "question": "尊重人民首创精神，就要（  ）。",
+        "options": ["A) 尊重实践、尊重创造", "B) 坚持顶层设计和基层探索相统一", "C) 激发人民群众的创新创造活力", "D) 营造激励干事业创业的浓厚氛围"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 74,
+        "question": "实现共同富裕不仅是经济问题，而且是关系党的执政基础的重大政治问题。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 75,
+        "question": "江山就是人民，人民就是江山，这是由我们党的性质、宗旨决定的。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 76,
+        "question": "贯彻党的群众路线，“知”是基础、是前提，“行”是重点、是关键。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 77,
+        "question": "促进共同富裕，要把握好勤劳创新致富、坚持基本经济制度、尽力而为量力而行、坚持飞速增长的原则。",
+        "options": ["A) √", "B) ×"],
+        "answer": "B"
+    },
+    {
+        "id": 78,
+        "question": "群众路线是我们党始终坚持的根本工作方法。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 79,
+        "question": "（   ）是一个国家现代化的重要标志。",
+        "options": ["A) 国家治理体系和治理能力现代化", "B) 改革开放", "C) 从严治党", "D) 自我革命"],
+        "answer": "A"
+    },
+    {
+        "id": 80,
+        "question": "历史唯物主义认为，经济社会发展不停顿，（   ）就不止步。",
+        "options": ["A) 生产力发展", "B) 社会关系变革", "C) 改革开放", "D) 社会结构变化"],
+        "answer": "C"
+    },
+    {
+        "id": 81,
+        "question": "（   ）是划时代的，实现改革由局部探索、破冰突围到系统集成、全面深化的转变，开创了我国改革开放新局面。",
+        "options": ["A) 党的十八届四中全会", "B) 党的十八届三中全会", "C) 党的十九届四中全会", "D) 党的十九届六中全会"],
+        "answer": "B"
+    },
+    {
+        "id": 82,
+        "question": "“推进国家治理体系和治理能力现代化”，明确了改革的鲜明指向和时代要求，就是要通过改革进一步增强我国制度活力，把制度优势转化为（  ）。",
+        "options": ["A) 行动优势", "B) 自觉行动", "C) 国家治理效能", "D) 共同意识"],
+        "answer": "C"
+    },
+    {
+        "id": 83,
+        "question": "改革开放永无止境是（   ）的深刻反映。",
+        "options": ["A) 物质世界发展规律", "B) 人类社会发展规律", "C) 社会基本矛盾规律", "D) 共产党执政规律"],
+        "answer": "C"
+    },
+    {
+        "id": 84,
+        "question": "要破解发展中面临的难题，化解风险挑战，推动经济社会持续健康发展，必须依靠（   ）",
+        "options": ["A) 政府", "B) 领导干部", "C) 从严治党", "D) 全面深化改革"],
+        "answer": "D"
+    },
+    {
+        "id": 85,
+        "question": "社会主义改革开放的出发点和落脚点，是为了更好（   ），为了让老百姓过上好日子。",
+        "options": ["A) 建设美丽中国", "B) 实现和维护人民利益", "C) 推进乡村振兴", "D) 提高全社会文明程度"],
+        "answer": "B"
+    },
+    {
+        "id": 86,
+        "question": "（   ）是党和人民大踏步赶上时代的重要法宝。",
+        "options": ["A) 坚持党的领导", "B) 一切从实际出发", "C) 改革开放", "D) 对外开放"],
+        "answer": "C"
+    },
+    {
+        "id": 87,
+        "question": "习近平指出：“改革开放是前无古人的崭新事业，必须坚持（   ），在不断实践探索中推进。”",
+        "options": ["A) 正确的世界观", "B) 正确的方法论", "C) 正确的人生观", "D) 正确的价值观"],
+        "answer": "B"
+    },
+    {
+        "id": 88,
+        "question": "（   ）是当代中国最显著的特征、最壮丽的气象。",
+        "options": ["A) 改革开放", "B) 新发展格局", "C) 建设美丽中国", "D) 构建人类命运共同体"],
+        "answer": "A"
+    },
+    {
+        "id": 89,
+        "question": "全面深化改革的总目标是（   ）。",
+        "options": ["A) 完善和发展中国特色社会主义制度", "B) 推进国家治理体系和治理能力现代化", "C) 全面建成小康社会", "D) 建成社会主义现代化强国"],
+        "answer": "A B"
+    },
+    {
+        "id": 90,
+        "question": "实践证明，改革开放是（   ）",
+        "options": ["A) 决定当代中国命运的关键一招", "B) 决定实现“两个一百年”奋斗目标的关键一招", "C) 实现中华民族伟大复兴的关键一招", "D) 决定实现社会主义三大改造的关键一招"],
+        "answer": "A B C"
+    },
+    {
+        "id": 91,
+        "question": "一个国家选择什么样的国家制度和国家治理体系，是由这个国家的（   ）决定的",
+        "options": ["A) 历史文化", "B) 社会性质", "C) 经济发展水平", "D) 领导人"],
+        "answer": "A B C"
+    },
+    {
+        "id": 92,
+        "question": "全面深化改革开放，胆子要大，步子要稳。对此正确的理解是（   ）",
+        "options": ["A) 胆子要大，就是改革再难也要向前推进，敢于担当，敢于啃硬骨头", "B) 步子要稳，就是方向一定要准，行驶一定要稳，尤其不能犯颠覆性错误", "C) 胆子大不是蛮干，而是在深思熟虑后的突破、实践基础上的创新", "D) 步子要稳不是盲目保守，而是要在大胆突破中把准方向、科学决策"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 93,
+        "question": "关于国家治理体系和治理能力的关系，以下说法正确的是（   ）。",
+        "options": ["A) 国家治理体系和治理能力是一个有机整体，相辅相成", "B) 有了好的国家治理体系才能提高国家治理能力", "C) 提高国家治理能力才能充分发挥国家治理体系的效能", "D) 推进国家治理体系和治理能力现代化，必须坚定中国特色社会主义制度自信"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 94,
+        "question": "改革开放只有完成时，没有进行时，停顿和倒退没有出路。",
+        "options": ["A) √", "B) ×"],
+        "answer": "B"
+    },
+    {
+        "id": 95,
+        "question": "党的二十大围绕全面建成社会主义现代化强国、以中国式现代化全面推进中华民族伟大复兴的中心任务，对全面深化改革开放作出新的部署。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 96,
+        "question": "习近平强调：“我们的改革开放是有方向、有立场、有原则的。”",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 97,
+        "question": "全面深化改革开放是涉险滩、闯难关的变革。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 98,
+        "question": "没有坚定的制度自信就不可能有全面深化改革的勇气，同样，离开不断改革，制度自信也不可能彻底、不可能久远。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 99,
+        "question": "（ ）是发展行动的先导。",
+        "options": ["A) 发展理念", "B) 发展格局", "C) 发展方向", "D) 发展策略"],
+        "answer": "A"
+    },
+    {
+        "id": 100,
+        "question": "（ ）的发展理念，相互贯通、相互促进，是具有内在联系的集合体，要统一贯彻，不能顾此失彼，也不能相互替代。",
+        "options": ["A) 改革、和谐、绿色、开放、共享", "B) 创新、协调、和谐、开放、共赢", "C) 创新、和谐、绿色、开放、发展", "D) 创新、协调、绿色、开放、共享"],
+        "answer": "D"
+    },
+    {
+        "id": 101,
+        "question": "党的十八大以来，我国经济已由高速增长阶段转向（ ）阶段。",
+        "options": ["A) 世界级市场", "B) 高水平开放", "C) 强动力转换", "D) 高质量发展"],
+        "answer": "D"
+    },
+    {
+        "id": 102,
+        "question": "我们乘势而上开启全面建设社会主义现代化国家新征程、向第二个百年奋斗目标进军，这标志着我国进入了一个（   ）。",
+        "options": ["A) 新发展时期", "B) 新发展方位", "C) 新发展阶段", "D) 新发展格局"],
+        "answer": "C"
+    },
+    {
+        "id": 103,
+        "question": "（ ）是引领发展的第一动力。",
+        "options": ["A) 劳动力", "B) 资本", "C) 科技", "D) 创新"],
+        "answer": "D"
+    },
+    {
+        "id": 104,
+        "question": "构建高水平社会主义市场经济体制，关键是要（   ）。",
+        "options": ["A) 处理好政府和市场的关系", "B) 处理好当前利益和长远利益的关系", "C) 处理好中国和外国的关系", "D) 处理好效率和公平的关系"],
+        "answer": "A"
+    },
+    {
+        "id": 105,
+        "question": "（ ）是实现高质量发展的指导原则。",
+        "options": ["A) 新发展阶段", "B) 新发展方位", "C) 新发展理念", "D) 供给侧改革"],
+        "answer": "C"
+    },
+    {
+        "id": 106,
+        "question": "非公有制经济包括（ ）。",
+        "options": ["A) 个体经济、民营经济", "B) 港澳台投资经济", "C) 外商投资经济", "D) 混合所有制经济中的非国有成分和非集体成分"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 107,
+        "question": "全面地理解和把握新发展理念，以下说法正确的是（ ）",
+        "options": ["A) 要从根本宗旨上把握新发展理念，坚持以人民为中心的发展思想", "B) 要从问题导向上把握新发展理念，切实解决发展不平衡不充分问题", "C) 要从忧患意识上把握新发展理念，下好先手棋，打好主动仗", "D) 新发展理念是引领我国发展全局深刻变革的科学指引"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 108,
+        "question": "高质量发展的重大战略意义是（ ）。",
+        "options": ["A) 高质量发展为全面建设社会主义现代化国家提供更为坚实的物质基础", "B) 高质量发展是不断满足人民对美好生活需要的重要保证", "C) 高质量发展是维护国家长治久安的必然要求", "D) 以上都对"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 109,
+        "question": "以下对于国有企业认识的观点，正确的是（ ）。",
+        "options": ["A) 国有企业是中国特色社会主义的重要物质基础和政治基础", "B) 要深化国有企业改革,坚持有利于国有资产保值增值", "C) 推动国有资本和国有企业做强做优做大", "D) 坚持党对国有企业的领导不动摇"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 110,
+        "question": "新发展理念具有丰富的科学内涵和具体的实践要求是（ ）。",
+        "options": ["A) 创新是引领发展的第一动力，创新发展注重的是解决发展动力问题", "B) 协调是持续健康发展的内在要求，协调发展注重的是解决发展不平衡问题", "C) 绿色是永续发展的必要条件和人民对美好生活追求的重要体现，绿色发展注重的是解决人与自然和谐共生问题", "D) 开放是国家繁荣发展的必由之路，开放发展注重的是解决发展内外联动问题"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 111,
+        "question": "公有制经济包括（ ）。",
+        "options": ["A) 国有经济", "B) 集体经济", "C) 混合所有制经济中的国有成分", "D) 混合所有制经济中的集体成分"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 112,
+        "question": "公有制经济 ( )。",
+        "options": ["A) 是全体人民的宝贵财富", "B) 是我国各族人民共享发展成果的制度性保证", "C) 是巩固党的执政地位、坚持我国社会主义制度的重要保证", "D) 公有制主体地位不能动摇"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 113,
+        "question": "新发展阶段是（ ）。",
+        "options": ["A) 我国社会主义初级阶段历史进程中的一个重要阶段", "B) 中国共产党带领人民迎来从站起来、富起来到强起来历史性跨越的新阶段", "C) 全面建设社会主义现代化国家、向第二个百年奋斗目标进军的重要阶段", "D) 决胜全面小康社会的阶段"],
+        "answer": "A B C"
+    },
+    {
+        "id": 114,
+        "question": "我国将立足新发展阶段，贯穿新发展理念，积极构建以国际大循环为主体、国内国际双循环相互促进的新发展格局。",
+        "options": ["A) √", "B) ×"],
+        "answer": "B"
+    },
+    {
+        "id": 115,
+        "question": "坚持创新发展、协调发展、绿色发展、开放发展、共享发展，是关系我国发展全局的一场深刻变革。（    ）",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 116,
+        "question": "经济发展是一个螺旋式上升的过程，上升不是线性的，量积累到一定阶段，必须转向质的提升，我国经济发展也要遵循这一规律。（    ）",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 117,
+        "question": "建设现代化经济体系是我国发展的战略目标，是推动高质量发展、全面提高经济整体竞争力的必然要求。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 118,
+        "question": "坚持全民共享、全面共享、共建共享、渐进共享，使全体人民有更多获得感、幸福感、安全感，朝着共同富裕方向稳步前进。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 119,
+        "question": "全面建设社会主义现代化国家，最艰巨最繁重的任务依然在农村，最广泛最深厚的基础依然在农村。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 120,
+        "question": "必须坚持( )是第一生产力。",
+        "options": ["A) 人才", "B) 资源", "C) 科技", "D) 环境"],
+        "answer": "C"
+    },
+    {
+        "id": 121,
+        "question": "（ ）是发展第一动力。",
+        "options": ["A) 科技", "B) 人才", "C) 创新", "D) 党的领导"],
+        "answer": "C"
+    },
+    {
+        "id": 122,
+        "question": "（ ）提出“科学技术是第一生产力”。",
+        "options": ["A) 毛泽东", "B) 邓小平", "C) 习近平", "D) 胡锦涛"],
+        "answer": "B"
+    },
+    {
+        "id": 123,
+        "question": "（ ）是民族振兴、社会进步的基石。",
+        "options": ["A) 科技", "B) 教育", "C) 共同富裕", "D) 人才"],
+        "answer": "B"
+    },
+    {
+        "id": 124,
+        "question": "实施创新驱动发展战略，（ ），让创新成为全社会的共同行动。",
+        "options": ["A) 要坚持面向世界科技前沿、面向经济主战场", "B) 要坚持面向国家重大需求、面向人民生命健康", "C) 坚持科技创新，增强自主创新能力", "D) 坚决打赢关键核心技术攻坚战"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 125,
+        "question": "实施人才强国战略，（ ），实施更加积极、更加开放、更加有效的人才政策。",
+        "options": ["A) 要坚持党管人才原则", "B) 坚持尊重劳动、尊重知识、尊重人才、尊重创造", "C) 完善人才战略布局", "D) 深化人才发展体制机制改革"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 126,
+        "question": "建设教育强国（ ）。",
+        "options": ["A) 是全面建成社会主义现代化强国的战略先导", "B) 是实现高水平科技自立自强的重要支撑", "C) 是促进全体人民共同富裕的有效途径", "D) 是以中国式现代化全面推进中华民族伟大复兴的基础工程"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 127,
+        "question": "教育优先发展，要做到（ ），使我国教育越办越好。",
+        "options": ["A) 经济社会发展规划优先安排教育发展", "B) 财政资金投入优先保障教育投入", "C) 公共资源配置优先满足教育和人力资源开发需要", "D) 推动健全优先发展教育事业的体制机制"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 128,
+        "question": "全面建设社会主义现代化国家,( )。",
+        "options": ["A) 教育是根本", "B) 科技是关键", "C) 人才是基础", "D) 改革是保证"],
+        "answer": "A B C"
+    },
+    {
+        "id": 129,
+        "question": "实施科教兴国战略，（ ）。",
+        "options": ["A) 是应对新时代环境变化的必然要求", "B) 是建设创新型国家的必然要求", "C) 是应对国际竞争的有力举措", "D) 是决胜全面小康社会的重大部署"],
+        "answer": "A B C"
+    },
+    {
+        "id": 130,
+        "question": "实施（ ）是增强综合国力、满足人民群众美好生活需要的必然要求，是建设教育强国、科技强国、人才强国的重大举措。",
+        "options": ["A) 科教兴国战略", "B) 人才强国战略", "C) 创新驱动发展战略", "D) “四个全面战略”"],
+        "answer": "A B C"
+    },
+    {
+        "id": 131,
+        "question": "科技是国之利器，要加快实现高水平科技自立自强。( )",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 132,
+        "question": "人才强国战略，就是要牢固树立人才资源是第一资源的理念。（ ）",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 133,
+        "question": "全面建成社会主义现代化强国关键看科技自立自强。（ ）",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 134,
+        "question": "实现高水平科技自立自强是国家强盛和民族复兴的战略基石。（ ）",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 135,
+        "question": "教育、科技、人才是全面建设社会主义现代化国家的基础性、战略性支撑。( )",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 136,
+        "question": "人才是实现民族振兴、赢得国际竞争主动的战略资源。（ ）",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 137,
+        "question": "创新驱动发展战略，就是要坚持创新是第一动力，把创新驱动落实到现代化建设整个进程和各个方面。（ ）",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 138,
+        "question": "(    ) 是党克敌制胜、执政兴国的重要法宝，是团结海内外全体中华儿女实现中华民族伟大复兴的重要法宝。",
+        "options": ["A) 协商民主", "B) 统一战线", "C) 全过程人民民主", "D) 实现中华民族伟大复兴"],
+        "answer": "B"
+    },
+    {
+        "id": 139,
+        "question": "人民当家作主是社会主义民主政治的本质特征，(     )是党领导人民治理国家的基本方式。",
+        "options": ["A) 依法治国", "B) 坚持系统观念", "C) 全过程民主", "D) 民主集中制"],
+        "answer": "A"
+    },
+    {
+        "id": 140,
+        "question": "我国是工人阶级领导的、以工农联盟为基础的(     )的社会主义国家，国家一切权力属于人民。",
+        "options": ["A) 人民民主专政", "B) 人民当家作主", "C) 中国共产党领导", "D) 民主专政"],
+        "answer": "A"
+    },
+    {
+        "id": 141,
+        "question": "统战工作的关键是要(     )，在尊重多样性中寻求一致性，找到最大公约数、画出最大同心圆。",
+        "options": ["A) 坚持求同存异", "B) 坚持党的领导", "C) 坚持同一性", "D) 坚持多样性"],
+        "answer": "A"
+    },
+    {
+        "id": 142,
+        "question": "(     )是人民当家作主和依法治国的根本保证。",
+        "options": ["A) 人民民主", "B) 党的领导", "C) 宪法", "D) 全过程民主"],
+        "answer": "B"
+    },
+    {
+        "id": 143,
+        "question": "(    ) 是统一战线最核心、最根本的问题。",
+        "options": ["A) 大团结大联合", "B) 广交朋友", "C) 凝聚人心", "D) 坚持党的领导"],
+        "answer": "D"
+    },
+    {
+        "id": 144,
+        "question": "人民代表大会制度(    ) 。",
+        "options": ["A) 坚持中国共产党领导，有效保证国家沿着社会主义道路前进", "B) 最大限度保障人民当家作主", "C) 有效保证国家治理跳出治乱兴衰的历史周期率", "D) 正确处理事关国家前途命运的一系列重大政治关系，维护国家统一和民族团结"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 145,
+        "question": "(    ) 构成我国的基本政治制度。",
+        "options": ["A) 中国共产党领导的多党合作和政治协商制度", "B) 民族区域自治制度", "C) 基层群众自治制度", "D) 人民代表大会制度"],
+        "answer": "A B C"
+    },
+    {
+        "id": 146,
+        "question": "全过程人民民主是最管用的民主, 具体体现在（   )。",
+        "options": ["A) 保证在党的领导下有效治理国家，切实防止出现一盘散沙的现象", "B) 保证人民依法行使权利，切实防止出现选举时漫天许诺、选举后无人过问的现象", "C) 加强社会各种力量的合作协调，切实防止出现党争纷沓、相互倾轧的现象", "D) 巩固平等团结互助和谐的社会主义民族关系，切实防止出现民族隔阂、民族冲突的现象"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 147,
+        "question": "全过程人民民主是最真实的民主,具体体现在（    )。",
+        "options": ["A) 把党的主张、国家意志、人民意愿紧密融合在一起，彰显了人民民主的真实性", "B) 真实反映人民的期盼、希望和诉求", "C) 人民的意愿和呼声，经过民主决策程序成为党和国家的方针政策", "D) 真真切切落实到国家政治生活和社会生活各方面"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 148,
+        "question": "中国特色社会主义政治制度(    ) 。",
+        "options": ["A) 既把握了长期形成的历史传承，又把握了走过的发展道路", "B) 把握了现实要求、着眼解决现实问题", "C) 注重历史和现实、理论和实践、形式和内容有机统一", "D) 具有鲜明的中国特色、民族特色、时代特色"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 149,
+        "question": "全过程人民民主是最广泛的民主, 具体体现在（   )。",
+        "options": ["A) 人民既充分享有民主选举权利，又充分享有民主协商、民主决策、民主管理、民主监督权利", "B) 既参与国家事务管理，又参与经济和文化事业以及社会事务管理", "C) 既参与国家发展顶层设计的意见建议征询，又参与地方公共事务治理", "D) 不同地域、不同领域、不同层级、不同群体均实现全面覆盖"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 150,
+        "question": "中华人民共和国的一切权力属于人民，人民行使国家权力的机关是(    ) 。",
+        "options": ["A) 全国人民代表大会", "B) 地方各级人民代表大会", "C) 国务院", "D) 人民代表"],
+        "answer": "A B"
+    },
+    {
+        "id": 151,
+        "question": "中国特色社会主义政治制度的巨大优势体现在(    ) 。",
+        "options": ["A) 能够有效保证人民享有更加广泛的权利和自由", "B) 能够有效调节国家政治关系，形成安定团结的政治局面", "C) 能够集中力量办大事，有效促进社会生产力解放和发展", "D) 能够有效维护国家独立自主,有力维护国家主权、安全、发展利益"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 152,
+        "question": "我国的协商民主体系包括（    )。",
+        "options": ["A) 政党协商、人大协商", "B) 政府协商、政协协商", "C) 人民团体协商", "D) 基层协商以及社会组织协商"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 153,
+        "question": "人民民主是社会主义的生命，没有民主(    ) 。",
+        "options": ["A) 就没有社会主义", "B) 就没有社会主义的现代化", "C) 就没有中华民族伟大复兴", "D) 以上都对"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 154,
+        "question": "协商民主是中国社会主义民主政治中独特的、独有的、独到的民主形式。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 155,
+        "question": "人民代表大会制度是坚持党的领导、人民当家作主、依法治国有机统一的根本政治制度安排。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 156,
+        "question": "中国特色社会主义政治制度是由根本政治制度、基本政治制度、重要政治制度等组成的制度体系。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 157,
+        "question": "人民民主建立在社会主义经济基础之上，体现了社会主义国家的性质，反映了社会主义制度的本质要求，是一种新型的社会主义民主。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 158,
+        "question": "全过程人民民主是全链条、全方位、全覆盖的民主。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 159,
+        "question": "全过程人民民主是社会主义民主政治的本质属性，是最广泛、最真实、最管用的民主。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 160,
+        "question": "（   ）是社会主义法治最根本的保证。",
+        "options": ["A) 中国特色社会主义制度", "B) 人民当家作主", "C) 全面深化改革", "D) 党的领导"],
+        "answer": "D"
+    },
+    {
+        "id": 161,
+        "question": "（   ）是坚持和发展中国特色社会主义的本质要求和重要保障。",
+        "options": ["A) 全面建设社会主义现代化国家", "B) 全面依法治国", "C) 全面深化改革", "D) 全面从严治党"],
+        "answer": "B"
+    },
+    {
+        "id": 162,
+        "question": "把（  ）纳入中国特色社会主义法治体系，是我国法治区别于其他国家法治的鲜明特征。",
+        "options": ["A) 民法典", "B) 诉讼法", "C) 党内法规体系", "D) 法律总纲"],
+        "answer": "C"
+    },
+    {
+        "id": 163,
+        "question": "（    ）是国家治理体系和治理能力的重要依托。",
+        "options": ["A) 法治", "B) 民主", "C) 人民", "D) 党的领导"],
+        "answer": "A"
+    },
+    {
+        "id": 164,
+        "question": "法律规范体系是以（   ）为核心，由部门齐全、结构严谨、内部协调、体例科学、调整有效的法律规范所构成的有机整体。",
+        "options": ["A) 党章", "B) 宪法", "C) 民法", "D) 民法典"],
+        "answer": "B"
+    },
+    {
+        "id": 165,
+        "question": "（   ）是中国特色社会主义法治体系的根本制度基础，是全面推进依法治国的根本制度保障。",
+        "options": ["A) 中国特色社会主义制度", "B) 党的领导", "C) 马克思主义指导", "D) 以德治国"],
+        "answer": "A"
+    },
+    {
+        "id": 166,
+        "question": "（   ）是社会主义法律的基本属性",
+        "options": ["A) 公正", "B) 民主", "C) 诚信", "D) 平等"],
+        "answer": "D"
+    },
+    {
+        "id": 167,
+        "question": "全国各族人民、一切国家机关和武装力量、各政党和各社会团体、各企事业组织，都必须以（   ）为根本的活动准则。",
+        "options": ["A) 党章", "B) 宪法", "C) 民法", "D) 中华优秀传统文化"],
+        "answer": "B"
+    },
+    {
+        "id": 168,
+        "question": "法治监督体系以(      )为重点。",
+        "options": ["A) 规范和约束公权力运行", "B) 思想教育", "C) 制度建设", "D) 少数领导干部"],
+        "answer": "A"
+    },
+    {
+        "id": 169,
+        "question": "中国特色社会主义法治道路的核心要义是(    )。",
+        "options": ["A) 坚持党的领导", "B) 坚持中国特色社会主义制度", "C) 贯彻中国特色社会主义法治理论", "D) 坚持社会主义根本制度"],
+        "answer": "A B C"
+    },
+    {
+        "id": 170,
+        "question": "要坚持（   ）相结合，实现法治和德治相辅相成、相得益彰。",
+        "options": ["A) 依法治国", "B) 协同发展", "C) 全面发展", "D) 以德治国"],
+        "answer": "A D"
+    },
+    {
+        "id": 171,
+        "question": "关于政治和法治的关系，下列说法正确的是(    )。",
+        "options": ["A) 法治要脱离政治的影响，才能确保公平正义", "B) 法治当中有政治，没有脱离政治的法治", "C) 政治和法治相互依存，相互作用，密不可分", "D) 党和法的关系是政治和法治关系的集中反映"],
+        "answer": "B C D"
+    },
+    {
+        "id": 172,
+        "question": "全面依法治国是（   ）。",
+        "options": ["A) 国家治理的一场深刻革命，关系党执政兴国，关系人民幸福安康", "B) 完善和发展中国特色社会主义制度、推进国家治理体系和治理能力现代化的重要方面", "C) 坚持和发展中国特色社会主义的本质要求和重要保障", "D) “四个全面”战略布局之一"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 173,
+        "question": "全面依法治国必须正确处理(     )的关系。",
+        "options": ["A) 政治和法治", "B) 改革和法治", "C) 依法治国和以德治国", "D) 依法治国和依规治党"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 174,
+        "question": "党的领导和社会主义法治是一致的，社会主义法治必须坚持党的领导，党的领导必须依靠社会主义法治。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 175,
+        "question": "我们讲依宪治国、依宪执政，同西方所谓“宪政”有着本质区别，不能把二者混为一谈。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 176,
+        "question": "走中国特色社会主义法治道路，是由我国社会主义国家性质所决定的。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 177,
+        "question": "“立善法于天下，则天下治；立善法于一国，则一国治。”全面依法治国，必须加快完善中国特色社会主义法律体系，使之更加科学完备、统一权威。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 178,
+        "question": "党领导人民制定宪法法律，领导人民实施宪法法律，因此党自身可以在宪法范围外活动。",
+        "options": ["A) √", "B) ×"],
+        "answer": "B"
+    },
+    {
+        "id": 179,
+        "question": "培育和践行社会主义核心价值观，推动( )融入经济社会发展和人们生产生活方方面面。",
+        "options": ["A) 社会主义核心价值体系", "B) 理想信念、价值理念、道德观念", "C) 中华优秀传统文化", "D) 社会主义核心价值观"],
+        "answer": "D"
+    },
+    {
+        "id": 180,
+        "question": "没有高度的（ ），没有文化的繁荣兴盛，就没有中华民族伟大复兴。",
+        "options": ["A) 文化自觉", "B) 文化自信", "C) 文化创造活力", "D) 文化软实力"],
+        "answer": "B"
+    },
+    {
+        "id": 181,
+        "question": "坚持马克思主义在意识形态领域指导地位的制度是中国特色社会主义制度体系的一项（ ）。",
+        "options": ["A) 基本制度", "B) 根本制度", "C) 重要制度", "D) 基本政策"],
+        "answer": "B"
+    },
+    {
+        "id": 182,
+        "question": "下列观点和认识中，错误的是 ( )。",
+        "options": ["A) 当今时代，文化在综合国力竞争中的地位日益重要，谁占据了文化发展的制高点，谁就能够更好地在激烈的国际竞争中掌握主动权", "B) 文化强国既表现为具有高度文化素养的国民，也表现为发达的文化产业，还表现为强大的文化软实力", "C) 文化自信是一个国家、一个民族发展中更基本、更深沉、更持久的力量。坚定文化自信，事关文化安全，事关民族精神的独立性", "D) 文化是一种跨越国界、跨越民族、跨越时空的普适性精神力量，因此，要积极融入世界文化，完全没有必要坚守中华文化立场、走中国特色社会主义文化发展道路"],
+        "answer": "D"
+    },
+    {
+        "id": 183,
+        "question": "一个国家的文化软实力，从根本上说，取决于其（ ）的生命力、凝聚力、感召力。",
+        "options": ["A) 核心价值观", "B) 道德观念", "C) 思想理念", "D) 文化观念"],
+        "answer": "A"
+    },
+    {
+        "id": 184,
+        "question": "( )是一个民族赖以维系的精神纽带，是一个国家共同的思想道德基础。",
+        "options": ["A) 集体主义", "B) 核心价值观", "C) 理想信念", "D) 社会主义核心价值体系"],
+        "answer": "B"
+    },
+    {
+        "id": 185,
+        "question": "( )是社会主义意识形态的旗帜和灵魂，如果背离或者放弃，就会迷失方向、失去灵魂。",
+        "options": ["A) 核心价值观", "B) 马克思主义", "C) 中国特色社会主义", "D) 中华优秀传统文化"],
+        "answer": "B"
+    },
+    {
+        "id": 186,
+        "question": "坚持以（ ）为指导，是当代中国哲学社会科学区别于其他哲学社会科学的根本标志。",
+        "options": ["A) 马克思主义", "B) 集体主义", "C) 社会主义", "D) 爱国主义"],
+        "answer": "A"
+    },
+    {
+        "id": 187,
+        "question": "建设社会主义文化强国、推动社会主义文化繁荣兴盛，关键在于( )。",
+        "options": ["A) 坚定中国特色社会主义文化自信", "B) 高质量发展", "C) 提高综合国力", "D) 贯彻新发展理念"],
+        "answer": "A"
+    },
+    {
+        "id": 188,
+        "question": "( )关乎旗帜、关乎道路、关乎国家政治安全，决定文化前进方向和发展道路。",
+        "options": ["A) 意识形态", "B) 文化繁荣兴盛", "C) 文化自信", "D) 核心价值观"],
+        "answer": "A"
+    },
+    {
+        "id": 189,
+        "question": "文化软实力集中体现了一个国家基于文化而具有的（ ），以及由此产生的( )。",
+        "options": ["A) 凝聚力和生命力", "B) 吸引力和影响力", "C) 生命力和向心力", "D) 感召力和影响力"],
+        "answer": "A B"
+    },
+    {
+        "id": 190,
+        "question": "坚持马克思主义在意识形态领域指导地位的根本制度，必须（ ）。",
+        "options": ["A) 牢牢掌握党对意识形态工作领导权", "B) 坚持以立为本、立破并举，提高政治自觉，把意识形态阵地建设和管理工作摆在重要位置", "C) 全面落实意识形态工作责任制，压紧压实做好意识形态工作的政治责任", "D) 要切实把坚持以马克思主义为指导体现到理论武装、舆论引导、思想道德建设、文化文艺等各方面"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 191,
+        "question": "坚定中国特色社会主义文化自信的底气来自（ ）。",
+        "options": ["A) 中华优秀传统文化，这是我们坚定文化自信的深厚基础", "B) 革命文化和社会主义先进文化，这是我们坚定文化自信的坚强基石", "C) 中国特色社会主义伟大实践，这是我们坚定文化自信的现实基础", "D) 世界各国文明的交流互鉴"],
+        "answer": "A B C"
+    },
+    {
+        "id": 192,
+        "question": "坚持中国特色社会主义文化建设的“二为”方向，“二为”是指（ ）。",
+        "options": ["A) 为中国共产党治国理政服务", "B) 为人民服务", "C) 为建设社会主义现代化国家服务", "D) 为社会主义服务"],
+        "answer": "B D"
+    },
+    {
+        "id": 193,
+        "question": "中国共产党人精神谱系（ ）。",
+        "options": ["A) 集中体现了党的坚定信念、根本宗旨、优良作风", "B) 凝聚着中国共产党人艰苦奋斗、牺牲奉献、开拓进取的伟大品格", "C) 已经深深融入党、国家、民族、人民的血脉和灵魂", "D) 成为民族精神和时代精神的重要组成部分"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 194,
+        "question": "中华民族创造的优秀传统文化，形成了中国人看待世界、看待社会、看待人生的独特价值体系、文化内涵和精神品质，铸就了中华民族一以贯之的文化自信。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 195,
+        "question": "文化建设必须把经济效益放在首位。",
+        "options": ["A) √", "B) ×"],
+        "answer": "B"
+    },
+    {
+        "id": 196,
+        "question": "在一个国家的总体实力中，国家的硬实力固然具有标志性、基础性作用，但文化软实力同样具有不可替代的作用。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 197,
+        "question": "以长征精神为源头的中国共产党人精神谱系，是党带领人民战胜艰难险阻、取得一个又一个伟大胜利的精神丰碑，是中华民族的宝贵精神财富。",
+        "options": ["A) √", "B) ×"],
+        "answer": "B"
+    },
+    {
+        "id": 198,
+        "question": "实现中华民族伟大复兴，不需要推动中华文化繁荣兴盛。",
+        "options": ["A) √", "B) ×"],
+        "answer": "B"
+    },
+    {
+        "id": 199,
+        "question": "我国的（   ）是促进共同富裕的基础性制度。",
+        "options": ["A) 政治制度", "B) 社会治理制度", "C) 分配制度", "D) 生态文明制度"],
+        "answer": "C"
+    },
+    {
+        "id": 200,
+        "question": "(   )是老百姓最关心的问题，涉及分配、就业、教育、医疗、住房、社会保障等方面。",
+        "options": ["A) 法治", "B) 治理", "C) 科技", "D) 民生"],
+        "answer": "D"
+    },
+    {
+        "id": 201,
+        "question": "（   ）是我们坚持立党为公、执政为民的本质要求。",
+        "options": ["A) 增进民生福祉", "B) 建立强大的国防", "C) 全面依法治国", "D) 思想政治教育"],
+        "answer": "A"
+    },
+    {
+        "id": 202,
+        "question": "解决好（   ）问题，是民生改善的“温度计”，对国家长治久安具有重要支撑作用。",
+        "options": ["A) 法治", "B) 就业", "C) 治理", "D) 体制"],
+        "answer": "B"
+    },
+    {
+        "id": 203,
+        "question": "全面建设社会主义现代化国家，出发点和落脚点是（   ）。",
+        "options": ["A) 构建新发展格局", "B) 让人民生活越过越好", "C) 促进高质量发展", "D) 问题导向"],
+        "answer": "B"
+    },
+    {
+        "id": 204,
+        "question": "基层强则国家强，基层安则天下安，必须抓好（   ）这项基础性工作。",
+        "options": ["A) 基层治理现代化", "B) 社区治理", "C) 法治建设", "D) 城乡治理"],
+        "answer": "A"
+    },
+    {
+        "id": 205,
+        "question": "(   ）是社会治理最基本的单元，是党和政府联系、服务居民群众的“最后一公里”。",
+        "options": ["A) 乡村人民政府", "B) 居委会", "C) 基层党支部", "D) 城乡社区"],
+        "answer": "D"
+    },
+    {
+        "id": 206,
+        "question": "以（   ）为中心是我们党的根本执政理念，让人民生活幸福是“国之大者”。",
+        "options": ["A) 劳动者", "B) 人民", "C) 国家", "D) 社会"],
+        "answer": "B"
+    },
+    {
+        "id": 207,
+        "question": "在健全社会治理制度中，要善于运用（    ）的办法正确处理新形势下人民内部矛盾和社会矛盾。",
+        "options": ["A) 法治", "B) 民主", "C) 公平", "D) 协商"],
+        "answer": "A B D"
+    },
+    {
+        "id": 208,
+        "question": "关于发展与民生的关系，正确的论述有（   ）。",
+        "options": ["A) 发展是改善民生的物质基础", "B) 离开发展谈改善民生是无源之水、无本之木", "C) 抓民生就是在抓发展", "D) 持续不断改善民生，能够调动人们发展生产的积极性"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 209,
+        "question": "(     )是保障和改善民生的重要方针。",
+        "options": ["A) 尽力而为", "B) 突出重点", "C) 量力而行", "D) 正确把握民生和发展的关系"],
+        "answer": "A C"
+    },
+    {
+        "id": 210,
+        "question": "中国特色的社会保障体系把(    )作为根本出发点和落脚点，推动社会保障事业不断前进。",
+        "options": ["A) 坚持人民至上", "B) 坚持共同富裕", "C) 增进民生福祉", "D) 促进社会公平"],
+        "answer": "C D"
+    },
+    {
+        "id": 211,
+        "question": "健全和完善社会保障体系是新时代加强社会建设的重要着力点。坚持以(    )为重点，推动我国社会保障体系建设进入快车道。",
+        "options": ["A) 增强公平性", "B) 高质量快速发展", "C) 适应流动性", "D) 保证可持续性"],
+        "answer": "A C D"
+    },
+    {
+        "id": 212,
+        "question": "解决人民群众最关心最直接最现实的利益问题，是保障和改善民生的重中之重。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 213,
+        "question": "发展是解决民生问题的“总钥匙”，民生是发展的“指南针”。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 214,
+        "question": "收入分配是民生之源，提高劳动者的收入是改善民生、实现发展成果由人民共享最重要最直接的方式。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 215,
+        "question": "推进社会治理现代化在于建设一个人人有责、人人尽责、人人享有的社会治理共同体。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 216,
+        "question": "处理好绿水青山和金山银山的关系，关键在人，关键在（  ）。",
+        "options": ["A) 效益", "B) 钱", "C) 思路", "D) 高质量发展"],
+        "answer": "C"
+    },
+    {
+        "id": 217,
+        "question": "（ ）提出：“要像保护眼睛一样保护生态环境，像对待生命一样对待生态环境”。",
+        "options": ["A) 邓小平", "B) 江泽民", "C) 胡锦涛", "D) 习近平"],
+        "answer": "D"
+    },
+    {
+        "id": 218,
+        "question": "（ ）是工业文明发展到一定阶段的产物。",
+        "options": ["A) 农业文明", "B) 中华文明", "C) 生态文明", "D) 文明交流"],
+        "answer": "C"
+    },
+    {
+        "id": 219,
+        "question": "“天地与我并生，而万物与我为一”的“天人合一”思想，代表着我们祖先对处理（ ）的关系的重要认识。",
+        "options": ["A) 天与地", "B) 人与自然", "C) 人与社会", "D) 人与人"],
+        "answer": "B"
+    },
+    {
+        "id": 220,
+        "question": "马克思主义关于人与自然关系的论述，下列说法不正确的一项是（ ）",
+        "options": ["A) 人类是自然的有机组成部分，人与自然相互影响、相互制约", "B) 人与自然的关系是人与人的关系的动态反映", "C) 人具有主观能动性，可以改造自然并能征服自然", "D) 人与自然休戚与共，应当追求人与自然的和谐共生"],
+        "answer": "C"
+    },
+    {
+        "id": 221,
+        "question": "习近平指出：“（ ）是最公平的公共产品，是最普惠的民生福祉。”",
+        "options": ["A) 一带一路", "B) 法律面前人人平等", "C) 良好的生态环境", "D) 按劳分配"],
+        "answer": "C"
+    },
+    {
+        "id": 222,
+        "question": "加快形成绿色生产方式和生活方式，要（ ）。",
+        "options": ["A) 加快推动产业结构、能源结构、交通运输结构等调整优化", "B) 推进各类资源节约集约利用", "C) 积极稳妥推进碳达峰碳中和", "D) 把建设美丽中国转化为全体人民的自觉行动"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 223,
+        "question": "共建清洁美丽世界，必须（ ）。",
+        "options": ["A) 坚持以人为本", "B) 坚持多边主义", "C) 坚持共同但有区别的责任原则", "D) 坚持科学治理"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 224,
+        "question": "绿水青山是（ ）。",
+        "options": ["A) 自然财富", "B) 生态财富", "C) 社会财富", "D) 经济财富"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 225,
+        "question": "生态文明建设是（ ）。",
+        "options": ["A) 重大的经济问题", "B) 关系党的使命宗旨的重大政治问题", "C) 关系民生福祉的重大社会问题", "D) “五位一体”总体布局之一"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 226,
+        "question": "生态文明制度体系更加健全，表现在( )。",
+        "options": ["A) 制定出台《中共中央国务院关于加快推进生态文明建设的意见》《生态文明体制改革总体方案》等纲领性文件", "B) 制定数十项涉及生态文明建设的改革方案，生态文明“四梁八柱”性质的制度体系基本形成", "C) 制定修订环境保护法、环境保护税法等30多部生态环境领域法律和行政法规", "D) 开展中央生态环境保护督察，坚决查处破坏生态环境的重大典型案件"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 227,
+        "question": "对“绿水青山就是金山银山”的理解，正确的观点是（ ）。",
+        "options": ["A) 这是重要的发展理念", "B) 也是推进现代化建设的重大原则", "C) 阐明了经济发展与生态环境保护之间的关系", "D) 揭示了保护生态环境就是保护生产力、改善生态环境就是发展生产力的道理"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 228,
+        "question": "对共同但有区别的责任原则的理解，正确的说法是（ ）。",
+        "options": ["A) 必须充分考虑历史责任、各国国情和生态治理能力", "B) 必须充分肯定发展中国家应对气候变化所作的贡献，照顾其特殊困难和关切", "C) 发达国家应该主动承担历史责任，为发展中国家提供资金、技术、能力建设等方面支持", "D) 发达国家和发展中国家处于不同发展阶段，但在环境问题上的历史责任相同"],
+        "answer": "A B C"
+    },
+    {
+        "id": 229,
+        "question": "对我国推进碳达峰碳中和的理解，正确的说法是（ ）。",
+        "options": ["A) 这是破解资源环境约束突出问题、实现可持续发展的迫切需要", "B) 这是一场广泛而深刻的经济社会系统性变革", "C) 实现“双碳”目标，是别人让我们这样做，不是我们自己要做", "D) 要把“双碳”工作纳入生态文明建设整体布局和经济社会发展全局"],
+        "answer": "A B D"
+    },
+    {
+        "id": 230,
+        "question": "生态环境保护和经济发展是矛盾对立的关系，是鱼和熊掌不可兼得的。（ ）",
+        "options": ["A) √", "B) ×"],
+        "answer": "B"
+    },
+    {
+        "id": 231,
+        "question": "绿水青山可带来金山银山，金山银山也可买到绿水青山。（ ）",
+        "options": ["A) √", "B) ×"],
+        "answer": "B"
+    },
+    {
+        "id": 232,
+        "question": "“天地与我并生，而万物与我为一”的“天人合一”思想是中华文明的鲜明特色和独特标识，代表着我们祖先对处理人与自然关系的重要认识。（ ）",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 233,
+        "question": "发达国家应减少的是“奢侈排放”，中国则是最大限度地克制“生存和发展排放”。（ ）",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 234,
+        "question": "总体国家安全观以（   ) 为基础，加强经济安全风险预警、防控机制和能力建设。",
+        "options": ["A) 国土安全", "B) 经济安全", "C) 国内安全", "D) 国际安全"],
+        "answer": "B"
+    },
+    {
+        "id": 235,
+        "question": "维护政权安全，最主要是（   ) 。",
+        "options": ["A) 建立强大的军队", "B) 坚持和巩固马克思主义在意识形态领域的指导地位", "C) 坚持和巩固党的领导和长期执政地位", "D) 坚持和巩固人民民主专政"],
+        "answer": "C"
+    },
+    {
+        "id": 236,
+        "question": "（  ) 将“坚持总体国家安全观”纳入新时代坚持和发展中国特色社会主义的基本方略，并写入党章。",
+        "options": ["A) 党的十八届三中全会", "B) 党的十九届六中全会", "C) 党的十九大", "D) 党的二十大"],
+        "answer": "C"
+    },
+    {
+        "id": 237,
+        "question": "维护意识形态安全，最主要是（   ) 。",
+        "options": ["A) 落实意识形态工作责任制", "B) 把意识形态工作的领导权、管理权、话语权牢牢掌握在党的手中", "C) 及时掌握意识形态形势和动态", "D) 坚持和巩固马克思主义在意识形态领域的指导地位"],
+        "answer": "D"
+    },
+    {
+        "id": 238,
+        "question": "维护制度安全，最主要是（   ) 。",
+        "options": ["A) 坚持和完善中国特色社会主义制度", "B) 坚持和完善人民代表大会制度", "C) 推进国家治理体系和治理能力现代化", "D) 全面深化改革"],
+        "answer": "A"
+    },
+    {
+        "id": 239,
+        "question": "总体国家安全观以（   ）为宗旨，坚持国家安全一切为了人民。",
+        "options": ["A) 人民安全", "B) 政治安全", "C) 经济安全", "D) 军事安全"],
+        "answer": "A"
+    },
+    {
+        "id": 240,
+        "question": "总体国家安全观强调（   ) 。",
+        "options": ["A) 做好国家安全工作的系统思维和方法，加强科学统筹", "B) 维护国家安全要贯穿党和国家工作各方面全过程", "C) 打总体战，形成汇聚党政军民学各战线各方面各层级的强大合力", "D) 全社会全政府全体系全手段应对重大国家安全风险挑战"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 241,
+        "question": "政治安全涉及国家（   ) 的稳固，是一个国家最根本的需求。",
+        "options": ["A) 主权", "B) 政权", "C) 制度", "D) 意识形态"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 242,
+        "question": "总体国家安全观（  ) 。",
+        "options": ["A) 回答了如何解决好大国发展进程中面临的共性安全问题", "B) 回答了如何解决好中华民族伟大复兴关键时期面临的特殊安全问题", "C) 系统提出了一系列具有原创性、时代性的重要观点", "D) 为破解我国国家安全面临的难题、推进新时代国家安全工作提供了基本遵循"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 243,
+        "question": "政治安全与人民安全、国家利益至上的关系是（   ) 。",
+        "options": ["A) 要把政治安全、人民安全、国家利益至上三者统一起来，确保实现党的长期执政、人民安居乐业、国家长治久安", "B) 政治安全是维护人民安全和国家利益的根本保证", "C) 人民安全居于中心地位，国家安全归根到底是保障人民利益", "D) 国家利益至上是实现政治安全和人民安全的要求和原则"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 244,
+        "question": "走中国特色国家安全道路，必须坚持科学统筹的科学方法，要求（   )",
+        "options": ["A) 统筹外部安全和内部安全", "B) 统筹国土安全和国民安全", "C) 统筹传统安全和非传统安全", "D) 统筹自身安全和盟国安全"],
+        "answer": "A B C"
+    },
+    {
+        "id": 245,
+        "question": "进入新时代，我国面临更为严峻复杂的国家安全形势，从外部环境来看，主要是（  ) 。",
+        "options": ["A) 世界战略格局、全球治理体系、综合国力竞争进入深度变迁的历史进程", "B) 气候变化、粮食安全、能源安全等全球性问题日趋尖锐复杂", "C) 地区热点和局部冲突此起彼伏，国际局势变得更加复杂动荡", "D) 和平与发展的时代主题面临严峻挑战"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 246,
+        "question": "总体国家安全观以（  ) 为保障，建立完善强基固本、化险为夷的各项对策措施，为维护国家安全提供硬实力和软实力保障。",
+        "options": ["A) 军事安全", "B) 科技安全", "C) 文化安全", "D) 社会安全"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 247,
+        "question": "对新安全格局和新发展格局关系的正确理解是（   ) 。",
+        "options": ["A) 新发展格局是新安全格局的重要前提和保障", "B) 只有以新发展格局保障新安全格局，才能夯实我国经济发展的根基、增强发展的安全性稳定性", "C) 只有以新安全格局保障新发展格局，才能在各种可以预见和难以预见的风险挑战中增强我国的生存力、竞争力、发展力、持续力", "D) 以新安全格局保障新发展格局，必须统筹维护国家安全各类要素、各方资源、各种手段，主动塑造有利的外部安全环境"],
+        "answer": "C D"
+    },
+    {
+        "id": 248,
+        "question": "进入新时代，我国面临更为严峻复杂的国家安全形势，从内部环境来看，主要是（   ) 。",
+        "options": ["A) 重点领域关键环节改革任务仍然艰巨，科技创新能力存在卡点瓶颈", "B) 粮食、能源、资源、金融和产业链供应链安全面临重大考验", "C) 意识形态领域存在不少挑战，重点领域风险敞口加大", "D) 风险呈现形态更加复杂，既有显性风险又有隐性风险"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 249,
+        "question": "政治安全是立国之基，是国家生存和发展的基本条件。（    )",
+        "options": ["A) √", "B) ×"],
+        "answer": "B"
+    },
+    {
+        "id": 250,
+        "question": "发展和安全是一体之两翼、驱动之双轮。发展是安全的基础和目的，安全是发展的条件和保障，发展和安全要同步推进。（    )",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 251,
+        "question": "生物安全问题已经成为全世界、全人类面临的重大生存和发展威胁之一，重大传染病和生物安全风险是事关国家安全和发展、事关社会大局稳定的重大风险挑战。（    )",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 252,
+        "question": "推进国家安全体系和能力现代化，是新时代维护国家安全的迫切要求，也是推进国家治理体系和治理能力现代化的重要工程。（    )",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 253,
+        "question": "人民军队之所以能始终保持强大的凝聚力、向心力、战斗力，经受各种考验，最根本的就是靠（   ）",
+        "options": ["A) 党的坚强领导", "B) 文化传承", "C) 物质保障", "D) 军事训练"],
+        "answer": "A"
+    },
+    {
+        "id": 254,
+        "question": "在军队建设中，要牢固树立（    ）这个唯一的根本的标准。人民军队永远是战斗队，人民军队的生命在于战斗力，主责主业是备战打仗。",
+        "options": ["A) 战斗力", "B) 政治力", "C) 科技创新能力", "D) 自动化智能化"],
+        "answer": "A"
+    },
+    {
+        "id": 255,
+        "question": "党在新时代的强军目标中，（   ）是保证，关系军队的性质、宗旨、本色。",
+        "options": ["A) 听党指挥", "B) 能打胜仗", "C) 作风优良", "D) 建设世界一流军队"],
+        "answer": "C"
+    },
+    {
+        "id": 256,
+        "question": "习近平指出，要全面推进军事理论现代化、军队组织形态现代化、军事人员现代化、武器装备现代化，同国家现代化进程相一致，力争到（   ）基本实现国防和军队现代化。",
+        "options": ["A) 2020年", "B) 2035年", "C) 21世纪中叶", "D) 2025年"],
+        "answer": "B"
+    },
+    {
+        "id": 257,
+        "question": "（   ）是人民军队建设的首要，是人民军队的命脉所在。",
+        "options": ["A) 作风优良", "B) 能打胜仗", "C) 听党指挥", "D) 科技治军"],
+        "answer": "C"
+    },
+    {
+        "id": 258,
+        "question": "创新是引领发展的第一动力，必须坚持向（   ）要战斗力，统筹推进军事理论、科技、组织、管理、文化等方面创新，建设创新型军队。",
+        "options": ["A) 军民融合", "B) 科技创新", "C) 武器装备", "D) 训练实战"],
+        "answer": "B"
+    },
+    {
+        "id": 259,
+        "question": "人民军队建军最根本的原则是（   ）",
+        "options": ["A) 坚持国防科技现代化", "B) 坚持党对人民军队的绝对领导", "C) 坚持科技强军", "D) 坚持军民融合发展"],
+        "answer": "B"
+    },
+    {
+        "id": 260,
+        "question": "推进强军事业，必须毫不动摇坚持党对军队的绝对领导。党对军队的绝对领导，其基本内容是（   ）",
+        "options": ["A) 军队必须完全地无条件地置于中国共产党的领导之下", "B) 在思想上政治上行动上始终与党中央、中央军委保持高度一致", "C) 坚决维护党中央、中央军委权威", "D) 任何时候任何情况下都坚决听从党中央、中央军委指挥"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 261,
+        "question": "必须全面贯彻党领导军队的一系列根本原则和制度，确保部队（   ）",
+        "options": ["A) 绝对忠诚", "B) 绝对能胜", "C) 绝对纯洁", "D) 绝对可靠"],
+        "answer": "A C D"
+    },
+    {
+        "id": 262,
+        "question": "党的十八大以来，习近平着眼坚持和发展中国特色社会主义、实现中华民族伟大复兴，立足国家安全和发展战略全局，围绕强军兴军作出一系列重要论述，提出一系列重大战略思想、重大理论观点、重大决策部署，形成了习近平强军思想。习近平强军思想（   ）",
+        "options": ["A) 是习近平新时代中国特色社会主义思想的重要组成部分", "B) 开拓了马克思主义军事理论和当代中国军事实践发展新境界", "C) 标志着党的军事指导理论的与时俱进", "D) 深刻回答了“新时代建设一支什么样的强大人民军队、怎样建设强大人民军队”的时代课题"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 263,
+        "question": "我军要大力培育“一不怕苦、二不怕死”的精神，人民军队以敢打敢拼闻名于世，在枪林弹雨中，人民军队发出了“三个不相信”的英雄宣言：",
+        "options": ["A) 不相信有完不成的任务", "B) 不相信有克服不了的困难 苦难", "C) 不相信有胆敢来袭的敌人", "D) 不相信有战胜不了的敌人"],
+        "answer": "A B D"
+    },
+    {
+        "id": 264,
+        "question": "党在新时代的强军目标是建设一支（   ）的人民军队。",
+        "options": ["A) 听党指挥", "B) 能打胜仗", "C) 作风优良", "D) 保障有力"],
+        "answer": "A B C"
+    },
+    {
+        "id": 265,
+        "question": "到2020年，我军实现了建军一百年的奋斗目标，完成了国防和军队现代化新“三步走”重要的一步。",
+        "options": ["A) √", "B) ×"],
+        "answer": "B"
+    },
+    {
+        "id": 266,
+        "question": "能战方能止战，准备打才可能不必打，越不能打越可能挨打，这就是战争与和平的辩证法。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 267,
+        "question": "习近平强军思想深刻回答了“新时代建设一支什么样的强大人民军队、怎样建设强大人民军队”的时代课题。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 268,
+        "question": "人才是推动人民军队高质量发展、赢得军事竞争和未来战争主动的关键因素。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 269,
+        "question": "国家经济实力增强了，国防建设自然就能搞好了。",
+        "options": ["A) √", "B) ×"],
+        "answer": "B"
+    },
+    {
+        "id": 270,
+        "question": "台湾问题的实质是(     )。",
+        "options": ["A) 民族分裂主义在中国的表现", "B) 中国的内政问题", "C) 大陆和台湾的执政理念不同", "D) 美国对中国内政的干涉"],
+        "answer": "B"
+    },
+    {
+        "id": 271,
+        "question": "(   )，这是实现祖国统一的战略思路。",
+        "options": ["A) 坚持“和平统一、一国两制”基本方针", "B) 坚持一个中国原则和“九二共识”", "C) 坚持推动两岸关系融合发展", "D) 坚持在祖国大陆发展进步基础上解决台湾问题"],
+        "answer": "D"
+    },
+    {
+        "id": 272,
+        "question": "“一国两制”的根本宗旨是(   )。",
+        "options": ["A) 保持香港、澳门长期繁荣稳定", "B) 解决台湾问题", "C) 维护国家主权、安全、发展利益，保持香港、澳门长期繁荣稳定", "D) 实现中华民族伟大复兴"],
+        "answer": "C"
+    },
+    {
+        "id": 273,
+        "question": "坚持以行政长官为核心的行政主导体制，（   ）和特别行政区政府是香港治理的第一责任人。",
+        "options": ["A) 立法会", "B) 法院", "C) 行政长官", "D) 以上都是"],
+        "answer": "C"
+    },
+    {
+        "id": 274,
+        "question": "（   ) 是两岸关系的政治基础。",
+        "options": ["A) 坚持两岸政治互信", "B) 促进两岸人文交流", "C) 推动两岸经济融合发展", "D) 一个中国原则和“九二共识”"],
+        "answer": "D"
+    },
+    {
+        "id": 275,
+        "question": "香港和澳门特别行政区享有高度自治权，下列说法不正确的是（   )",
+        "options": ["A) 全面管治权和高度自治权在本质上是统一的", "B) 特别行政区因此在遵照基本法的基础上享有完全自治权", "C) 高度自治权是中央行使全面管治权的体现", "D) 全面管制权是授予特别行政区高度自治权的前提和基础"],
+        "answer": "B"
+    },
+    {
+        "id": 276,
+        "question": "下列属于支持香港、澳门融入国家发展大局战略措施的是（  ）。",
+        "options": ["A) 粤港澳大湾区建设战略", "B) 京津翼协同发展战略", "C) 长三角一体化战略", "D) 长江经济带发展战略"],
+        "answer": "A"
+    },
+    {
+        "id": 277,
+        "question": "能够确保香港、澳门回归后长期繁荣稳定的最佳制度是（    ) 。",
+        "options": ["A) 一国两制", "B) 社会主义制度", "C) 资本主义制度", "D) 中西结合制度"],
+        "answer": "A"
+    },
+    {
+        "id": 278,
+        "question": "在中华民族伟大复兴的历史进程中，香港、澳门融入国家发展大局中实现更好的发展，有重要意义。新时代，香港、澳门（   )",
+        "options": ["A) 积极主动助力国家全面开放", "B) 积极主动参与粤港澳大湾区建设", "C) 积极主动参与国家治理实践", "D) 积极主动促进国家人文交流"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 279,
+        "question": "“一国两制”作为一项基本国策，在坚持一个中国的前提下（  )",
+        "options": ["A) 一些地区实施社会主义制度，一些地区实施资本主义制度", "B) 以宪法和基本法为基础", "C) 保持香港、澳门原有的资本主义制度和生活方式不变，基本法律不变", "D) 是中国特色社会主义制度创新的重要成果"],
+        "answer": "B C D"
+    },
+    {
+        "id": 280,
+        "question": "解决台湾问题、实现祖国完全统一，是（  )  。",
+        "options": ["A) 党矢志不渝的历史任务", "B) 全体中华儿女的共同愿望", "C) 实现中华民族伟大复兴的必然要求", "D) 中国核心利益的核心, 民族复兴的题中之义"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 281,
+        "question": "中央依照（    )  对香港、澳门特别行政区行使全面管治权。",
+        "options": ["A) 宪法", "B) 基本法", "C) 反分裂国家法", "D) 国家安全法"],
+        "answer": "A B"
+    },
+    {
+        "id": 282,
+        "question": "作为直辖于中央人民政府的香港、澳门特别行政区，享有的高度自治权包括（  )",
+        "options": ["A) 行政管理权", "B) 立法权", "C) 独立的司法权", "D) 终审权"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 283,
+        "question": "坚持和完善“一国两制”制度体系,要健全中央行使全面管治权的制度。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 284,
+        "question": "美国等外来势力的干涉是两岸关系和平发展的最大障碍。",
+        "options": ["A) √", "B) ×"],
+        "answer": "B"
+    },
+    {
+        "id": 285,
+        "question": "全面准确贯彻“一国两制”方针，必须把维护中央对香港、澳门特别行政区全面管治权和保障特别行政区高度自治权有机结合起来。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 286,
+        "question": "外部势力纵容鼓动“台独”分裂势力滋事挑衅，加剧两岸对抗和台海形势紧张，既违逆求和平、促发展、谋共赢的时代潮流，也违背国际社会期待和世界人民意愿。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 287,
+        "question": "我们坚持“和平统一，一国两制” 的方针，推进祖国完全统一，我国通过的《反分裂国家法》，承诺绝不使用武力。",
+        "options": ["A) √", "B) ×"],
+        "answer": "B"
+    },
+    {
+        "id": 288,
+        "question": "构建人类命运共同体思想，核心是“建设持久和平、普遍安全、共同繁荣、（ ）的世界”。",
+        "options": ["A) 开放包容、合作共赢", "B) 清洁美丽、合作共赢", "C) 合作共赢、持续发展", "D) 开放包容、清洁美丽"],
+        "answer": "D"
+    },
+    {
+        "id": 289,
+        "question": "党的十八大以来，以习近平同志为中心的党中央旗帜鲜明地回答了新时代中国应当推动建设什么样的世界、构建什么样的国际关系，中国需要什么样的外交，怎样办好新时代外交等一系列重大理论和实践问题，形成了（ ）。",
+        "options": ["A) 习近平强军思想", "B) 习近平经济思想", "C) 习近平法治思想", "D) 习近平外交思想"],
+        "answer": "D"
+    },
+    {
+        "id": 290,
+        "question": "中国始终坚持（ ）的外交政策宗旨。",
+        "options": ["A) 建设“一带一路”", "B) 积极参与全球治理", "C) 维护世界和平、促进共同发展", "D) 构建人类命运共同体"],
+        "answer": "C"
+    },
+    {
+        "id": 291,
+        "question": "中国坚定不移地奉行独立自主的和平外交政策，走和平发展道路，这是由我国的（ ）所决定的。",
+        "options": ["A) 国家现状", "B) 国家战略", "C) 意识形态", "D) 社会主义性质和在国际上的地位"],
+        "answer": "D"
+    },
+    {
+        "id": 292,
+        "question": "中国特色大国外交紧紧围绕（ ）的历史任务。",
+        "options": ["A) 构建人类命运共同体", "B) 推动建设新型国际关系", "C) 引领全球治理体系改革", "D) 中华民族伟大复兴"],
+        "answer": "D"
+    },
+    {
+        "id": 293,
+        "question": "中国坚持独立自主的和平外交政策要把（ ）放在第一位",
+        "options": ["A) 经济", "B) 政治", "C) 国家主权和安全", "D) 文化"],
+        "answer": "C"
+    },
+    {
+        "id": 294,
+        "question": "中国政府倡议，共建“一带一路”恪守联合国宪章的宗旨和原则，……打造政治互信、经济融合、文化包容的利益共同体、命运共同体、（ ）。",
+        "options": ["A) 责任共同体", "B) 发展共同体", "C) 理念共同体", "D) 经济共同体"],
+        "answer": "A"
+    },
+    {
+        "id": 295,
+        "question": "引领全球治理体系改革要以（ ）为理念。",
+        "options": ["A) 创新、协调、绿色、开放、共享", "B) 不干涉内政", "C) 公平正义", "D) 合作共赢"],
+        "answer": "C"
+    },
+    {
+        "id": 296,
+        "question": "（ ）既是中国外交的崇高目标，也是世界各国的共同责任和历史使命。",
+        "options": ["A) 坚持和平发展道路", "B) 构建人类命运共同体", "C) 推动建立新型国际关系", "D) 促进“一带一路”国际合作"],
+        "answer": "B"
+    },
+    {
+        "id": 297,
+        "question": "中国特色大国外交，坚持以（ ）为底线维护国家主权、安全、发展利益。",
+        "options": ["A) 深化外交布局", "B) 公平正义", "C) 国家核心利益", "D) 维护世界和平、促进共同发展"],
+        "answer": "C"
+    },
+    {
+        "id": 298,
+        "question": "建设一个持久和平的世界，根本要义在于国家之间要构建（ ) 的伙伴关系。",
+        "options": ["A) 平等相待", "B) 独立自主", "C) 互商互谅", "D) 不干涉内政"],
+        "answer": "A C"
+    },
+    {
+        "id": 299,
+        "question": "建设共同繁荣的世界，就要坚持你好我好大家好的理念，推进（ ）、（ ）、（ ）、（ ）、共赢的经济全球化。",
+        "options": ["A) 开放", "B) 包容", "C) 普惠", "D) 平衡"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 300,
+        "question": "在处理国际关系和外交关系方面，我们应坚持（ ）的外交工作布局。",
+        "options": ["A) 大国是关键", "B) 周边是首要", "C) 发展中国家是基础", "D) 多边是舞台"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 301,
+        "question": "构建人类命运共同体，在安全问题上要（ ) 。",
+        "options": ["A) 以对话解决争端", "B) 以协商化解分歧", "C) 统筹应对传统和非传统安全威胁", "D) 反对一切形式的恐怖主义"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 302,
+        "question": "要同金砖国家深化战略伙伴关系，巩固（ ）、（ ）、（ ）“三轮驱动”合作框架。",
+        "options": ["A) 经贸财金", "B) 政治安全", "C) 人文交流", "D) 军队武器"],
+        "answer": "A B C"
+    },
+    {
+        "id": 303,
+        "question": "（ ) 才是人类社会和平、进步、发展的永恒主题。",
+        "options": ["A) 发展而不是倒退", "B) 和平而不是战争", "C) 合作而不是对抗", "D) 共赢而不是零和"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 304,
+        "question": "习近平外交思想强调，要坚持以维护党中央权威为统领加强党对对外工作的集中统一领导。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 305,
+        "question": "推动建立新型国际关系，要坚决维护各个国家的核心利益。",
+        "options": ["A) √", "B) ×"],
+        "answer": "B"
+    },
+    {
+        "id": 306,
+        "question": "周边是我国安身立命之所、发展繁荣之基。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 307,
+        "question": "中国始终根据事情本身的是非曲直决定自己的立场和政策，维护国际关系基本准则，维护国际公平正义。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 308,
+        "question": "习近平外交思想强调，要坚持以合作共赢为理念引领全球治理体系改革。",
+        "options": ["A) √", "B) ×"],
+        "answer": "B"
+    },
+    {
+        "id": 309,
+        "question": "（ ）就是要坚定理想信念宗旨，自觉抵御各种腐",
+        "options": ["A) 自我净化", "B) 自我完善", "C) 自我革新", "D) 自我提高"],
+        "answer": "A"
+    },
+    {
+        "id": 310,
+        "question": "全面从严治党，核心是（ ）。",
+        "options": ["A) 党的纪律建设", "B) 加强党的领导", "C) 党的作风建设", "D) 党的制度建设"],
+        "answer": "B"
+    },
+    {
+        "id": 311,
+        "question": "（ ）是党的基础性建设。",
+        "options": ["A) 思想建设", "B) 组织建设", "C) 作风建设", "D) 政治建设"],
+        "answer": "A"
+    },
+    {
+        "id": 312,
+        "question": "我们党的最大政治优势是（ ）。",
+        "options": ["A) 坚持党的领导", "B) 一起从实际出发", "C) 密切联系群众", "D) 对外开放"],
+        "answer": "C"
+    },
+    {
+        "id": 313,
+        "question": "（ ）是党永葆生机活力、走好新的赶考之路的必由之路，是新时代党的建设的鲜明主题。",
+        "options": ["A) 全面依法治国", "B) 全面从严治党", "C) 全面建设社会主义现代化强国", "D) 全面深化改革"],
+        "answer": "B"
+    },
+    {
+        "id": 314,
+        "question": "（ ）是党的鲜明品格和重要优势。",
+        "options": ["A) 求真务实", "B) 实事求是", "C) 艰苦奋斗", "D) 勇于自我革命"],
+        "answer": "D"
+    },
+    {
+        "id": 315,
+        "question": "党的（ ）是党的根本性建设。",
+        "options": ["A) 思想建设", "B) 组织建设", "C) 作风建设", "D) 政治建设"],
+        "answer": "D"
+    },
+    {
+        "id": 316,
+        "question": "坚持和加强党的全面领导，坚持党要管党、全面从严治党，以（ ）为着力点。",
+        "options": ["A) 加强党的长期执政能力建设、先进性和纯洁性建设", "B) 党的政治建设", "C) 坚定理想信念宗旨", "D) 调动全党积极性、主动性、创造性"],
+        "answer": "D"
+    },
+    {
+        "id": 317,
+        "question": "全面建设社会主义现代化国家、全面推进中华民族伟大复兴，关键在党，关键在（ ）。",
+        "options": ["A) 全面深化改革", "B) 全面依法治国", "C) 全面建设社会主义现代化强国", "D) 全面从严治党"],
+        "answer": "D"
+    },
+    {
+        "id": 318,
+        "question": "党的十八大以来，我们坚持党要管党、全面从严治党，坚持问题导向，以整治“四风”为突破口，“四风”包括：形式主义、（ ）。",
+        "options": ["A) 官僚主义", "B) 享乐主义", "C) 奢靡之风", "D) 利己主义"],
+        "answer": "A B C"
+    },
+    {
+        "id": 319,
+        "question": "加强作风建设，必须（ ）。",
+        "options": ["A) 紧紧围绕保持党同人民群众的血肉联系，增强群众观念和群众感情", "B) 要锲而不舍落实中央八项规定精神，持续深化纠治“四风”", "C) 要弘扬党的光荣传统和优良作风", "D) 促进党员干部特别是领导干部带头深入调查研究"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 320,
+        "question": "全面从严治党是一项管党治党的系统工程，要（ ）。",
+        "options": ["A) 坚持内容上全涵盖，党的建设推进到哪里，全面从严治党体系就要构建到哪里", "B) 坚持对象上全覆盖，面向党的各级组织和全体党员", "C) 坚持责任上全链条，让每名党员、干部行使应有权利、履行应尽责任", "D) 坚持制度上全贯通，把制度建设要求体现到全面从严治党全过程"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 321,
+        "question": "加强党的自身建设是（ ）。",
+        "options": ["A) 把党锻造成为坚强有力的马克思主义执政党的迫切需要", "B) 新形势下推进伟大事业的必然要求", "C) 新形势下推进进行伟大斗争的必然要求", "D) 新形势下推进实现伟大梦想的必然要求"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 322,
+        "question": "新时代党的建设总要求，包括（ ）。",
+        "options": ["A) 坚持和加强党的全面领导，坚持党要管党、全面从严治党", "B) 以加强党的长期执政能力建设、先进性和纯洁性建设为主线", "C) 以党的政治建设为统领，以坚定理想信念宗旨为根基，全面推进党的各项建设", "D) 把制度建设贯穿其中，深入推进反腐败斗争"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 323,
+        "question": "全面依法治国是党永葆生机活力、走好新的赶考之路的必由之路，是新时代党的建设的鲜明主题。",
+        "options": ["A) √", "B) ×"],
+        "answer": "B"
+    },
+    {
+        "id": 324,
+        "question": "只有党的政治建设抓好了，党的建设才能夯基固本。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 325,
+        "question": "党的十八大以来，以习近平同志为核心的党中央把全面从严治党纳入“四个全面”战略布局，深入推进新时代党的建设新的伟大工程，提出一系列新理念新思想新战略，形成习近平关于党的建设的重要思想。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 326,
+        "question": "作风问题的核心是党同人民群众的关系问题。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 327,
+        "question": "全面从严治党，需要一体推进不敢腐、不能腐、不想腐。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 328,
+        "question": "习近平新时代中国特色社会主义思想，正是在中华民族迎来从站起来、富起来到（ ）的伟大飞跃，实现中华民族伟大复兴进入不可逆转的历史进程中创立并不断丰富发展的。",
+        "options": ["A) 初级阶段", "B) 强起来", "C) 实现了社会主义现代化强国", "D) 共产主义"],
+        "answer": "B"
+    },
+    {
+        "id": 329,
+        "question": "如何跳出治乱兴衰的历史周期率？经过百年奋斗特别是党的十八大以来新的实践，我们党给出了第二个答案，这就是（ ）。",
+        "options": ["A) 人民监督", "B) 民主新路", "C) 自我革命", "D) 自我净化"],
+        "answer": "C"
+    },
+    {
+        "id": 330,
+        "question": "习近平新时代中国特色社会主义思想，实现了马克思主义中国化时代化（    ）。",
+        "options": ["A) 第一次飞跃", "B) 第二次飞跃", "C) 第三次飞跃", "D) 新的飞跃"],
+        "answer": "D"
+    },
+    {
+        "id": 331,
+        "question": "振兴世界社会主义的中流砥柱是（    ）。",
+        "options": ["A) 中国特色社会主义", "B) 美国等资本主义的衰落", "C) 越南革新开放", "D) 朝鲜"],
+        "answer": "A"
+    },
+    {
+        "id": 332,
+        "question": "深刻总结和充分运用党百年奋斗的历史经验，根据时代和实践发展变化，科学回答了新时代坚持和发展什么样的中国特色社会主义、怎样坚持和发展中国特色社会主义等重大时代课题的是（ ）。",
+        "options": ["A) 毛泽东思想", "B) 邓小平理论", "C) 习近平新时代中国特色社会主义思想", "D) 科学发展观"],
+        "answer": "C"
+    },
+    {
+        "id": 333,
+        "question": "新时代中国正处于中华民族伟大复兴的关键时期，因为（   ）。",
+        "options": ["A) 我国发展站在了新的历史起点上", "B) 社会主要矛盾发生历史性变化，我们具备过去难以想象的良好发展条件", "C) 面临着许多前所未有的困难和问题，战略机遇和风险挑战并存", "D) 实现中华民族伟大复兴进入不可逆转的历史进程"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 334,
+        "question": "党的十九届六中全会指出，党确立（    ），反映了全党全军全国各族人民共同心愿，对新时代党和国家事业发展、对推进中华民族伟大复兴历史进程具有决定性意义。",
+        "options": ["A) 习近平同志党中央的核心、全党的核心地位", "B) 坚定不移贯彻新发展理念", "C) 确立习近平新时代中国特色社会主义思想的指导地位", "D) 坚定不移全面推进依法治国"],
+        "answer": "A C"
+    },
+    {
+        "id": 335,
+        "question": "习近平新时代中国特色社会主义思想从理论和实践的结合上科学回答了（ ）？",
+        "options": ["A) 新时代坚持和发展什么样的中国特色社会主义、怎样坚持和发展中国特色社会主义", "B) 建设什么样的社会主义现代化强国、怎样建设社会主义现代化强国", "C) 建设什么样的长期执政的马克思主义政党、怎样建设长期执政的马克思主义政党", "D) 如何实现中华民族伟大复兴的中国梦以及实现的具体步骤和方法"],
+        "answer": "A B C"
+    },
+    {
+        "id": 336,
+        "question": "习近平新时代中国特色社会主义思想创立的时代背景是（    ）。",
+        "options": ["A) 世界百年未有之大变局加速演进", "B) 新时代中国正处于中华民族伟大复兴的关键时期", "C) 中国式现代化全面推进拓展", "D) 中国共产党自我革命开辟新的境界"],
+        "answer": "A B C D"
+    },
+    {
+        "id": 337,
+        "question": "中华优秀传统文化源远流长、博大精深，是中华文明的智慧结晶，同马克思主义具有高度契合性。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 338,
+        "question": "“十四个坚持”是习近平新时代中国特色社会主义思想的重要组成部分，是在治国理政各方面作出的理论分析和政策指导，构成了新时代坚持和发展中国特色社会主义的基本方略。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 339,
+        "question": "“十个明确”是习近平新时代中国特色社会主义思想的主体内容，集中体现了这一思想体系的主要观点和基本精神，构成了这一思想体系的四梁八柱,发挥着统摄作用。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 340,
+        "question": "党的十九大、十九届六中全会提出的“十个明确”“十四个坚持”“十三个方面成就”概括了习近平新时代中国特色社会主义思想的主要内容。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    },
+    {
+        "id": 341,
+        "question": "习近平新时代中国特色社会主义思想，正是在党不断实现自我净化、自我完善、自我革新、自我提高，以伟大自我革命引领伟大社会革命的过程中创立并不断丰富发展的。",
+        "options": ["A) √", "B) ×"],
+        "answer": "A"
+    }
+]
+,
+          // 计算机组成原理题库
+          computer: [
+    {
+        id: 1,
+        question: "计算机系统由哪两大部分组成？",
+        options: ["A. 软件系统和硬件系统", "B. 主机和外设", "C. CPU和内存", "D. 输入设备和输出设备"],
+        answer: "A"
+    },
+    {
+        id: 2,
+        question: "冯·诺依曼计算机的基本思想是：",
+        options: ["A. 程序和数据都存储在内存中", "B. 采用二进制", "C. 程序控制", "D. 以上都是"],
+        answer: "D"
+    },
+    {
+        id: 3,
+        question: "下列选项中，描述机器运算速度指标的是：",
+        options: ["A. MIPS", "B. CPI", "C. IPC", "D. MFLOPS"],
+        answer: "A"
+    },
+    {
+        id: 4,
+        question: "假定基准程序A在某计算机上的运行时间为100秒，其中90秒为CPU时间，其余为I/O时间。若CPU速度提高50%，I/O速度不变，则运行基准程序A所耗费的时间是",
+        options: ["A. 55秒", "B. 60秒", "C. 65秒", "D. 70秒"],
+        answer: "D"
+    },
+    {
+        id: 5,
+        question: "下列选项中，描述浮点数操作速度指标的是",
+        options: ["A. MIPS", "B. CPI", "C. IPC", "D. MFLOPS"],
+        answer: "D"
+    },
+    {
+        id: 6,
+        question: "float 型数据通常用IEEE 754 单精度浮点数格式表示。若编译器将float 型变量x 分配在一个32 位浮点寄存器FR1 中，且x = -8.25，则FR1 的内容是",
+        options: ["A. C104 0000H", "B. C242 0000H", "C. C184 0000H", "D. C1C2 0000H"],
+        answer: "A"
+    },
+    {
+        id: 7,
+        question: "程序P在机器M上的执行时间是20秒，编译优化后，P执行的指令数减少到原来的70%，而CPI增加到原来的1.2倍，则P在M上的执行时间是",
+        options: ["A. 8.4秒", "B. 11.7秒", "C. 14秒", "D. 16.8秒"],
+        answer: "D"
+    },
+    {
+        id: 8,
+        question: "float型数据据常用IEEE754单精度浮点格式表示。假设两个float型变量x和y分别存放在32位寄存器f1和f2中，若(f1)=CC90 0000H，(f2)=B0C0 0000H，则x和y之间的关系为",
+        options: ["A. x<y且符号相同", "B. x<y且符号不同", "C. x>y且符号相同", "D. x>y且符号不同"],
+        answer: "A"
+    },
+    {
+        id: 9,
+        question: "将高级语言源程序转换为机器级目标代码文件的程序是",
+        options: ["A. 汇编程序", "B. 链接程序", "C. 编译程序", "D. 解释程序"],
+        answer: "C"
+    },
+    {
+        id: 10,
+        question: "假定计算机M1和M2具有相同的指令集体系结构(ISA)，主频分别为1.5 GHz和1.2 GHz。在M1和M2上运行某基准程序P，平均CPI分别为2和1，则程序P在M1和M2上运行时间的比值是",
+        options: ["A. 0.4", "B. 0.625", "C. 1.6", "D. 2.5"],
+        answer: "C"
+    },
+    {
+        id: 11,
+        question: "冯·诺依曼结构计算机中数据采用二进制编码表示，其主要原因是",
+        options: ["I. 二进制的运算规则简单", "II. 制造两个稳态的物理器件较容易", "III. 便于用逻辑门电路实现算术运算", "A. 仅Ⅰ、Ⅱ", "B. 仅Ⅰ、Ⅲ", "C. 仅Ⅱ、Ⅲ", "D.Ⅰ、Ⅱ和Ⅲ"],
+        answer: "D"
+    },
+    {
+        id: 12,
+        question: "计算器浮点运算速度为93.0146 PFLOPS，这说明该计算器每秒完成的浮点数操作次数为",
+        options: ["A. 9.3×10^13", "B. 9.3×10^15", "C. 9.3千万亿次", "D. 9.3亿亿次"],
+        answer: "C"
+    },
+    {
+        id: 13,
+        question: "某计算机内存按字节编址，地址空间大小为4GB，则内存地址寄存器MAR的位数至少是",
+        options: ["A. 20位", "B. 24位", "C. 32位", "D. 64位"],
+        answer: "C"
+    },
+    {
+        id: 14,
+        question: "某8位计算机有16根地址线，最大主存空间是",
+        options: ["A. 8KB", "B. 16KB", "C. 32KB", "D. 64KB"],
+        answer: "D"
+    },
+    {
+        id: 15,
+        question: "用海明码对长度为8位的数据进行检/纠错时，若能纠正一位错，则校验位数至少为",
+        options: ["A. 2", "B. 3", "C. 4", "D. 5"],
+        answer: "C"
+    },
+    {
+        id: 16,
+        question: "若x=103，y=-25，则下列表达式采用8位定点补码运算实现会发生溢出的是",
+        options: ["A. x+y", "B. -x+y", "C. x-y", "D. -x-y"],
+        answer: "C"
+    },
+    {
+        id: 17,
+        question: "由3个“1”和5个“0”组成的8位二进制补码，能表示的最小整数是",
+        options: ["A. -126", "B. -125", "C. -32", "D. -3"],
+        answer: "B"
+    },
+    {
+        id: 18,
+        question: "有如下C语言程序段：\nshort si=-32767;\nunsigned short usi=si;\n执行上述两条语句后，usi的值为",
+        options: ["A. -32767", "B. 32767", "C. 32768", "D. 32769"],
+        answer: "D"
+    },
+    {
+        id: 19,
+        question: "某计算机字长为32位，按字节编址，采用小端(Little Endian)方式存放数据。假定有一个double型变量，其机器数表示为1122334455667788H，存放在00008040H开始的连续存储单元中，则存储单元00008046H中存放的是",
+        options: ["A. 22H", "B. 33H", "C. 66H", "D. 77H"],
+        answer: "A"
+    },
+    {
+        id: 20,
+        question: "假定带符号整数采用补码表示，若 int 型变量 x 和 y 的机器数分别是 FFFF FFDFH 和 00000041H，则 x、y 的值以及 x - y 的机器数分别是",
+        options: ["A. x = -65, y = 41, x - y 的机器数溢出", "B. x = -33, y = 65, x - y 的机器数为 FFFF FF9DH", "C. x = -33, y = 65, x - y 的机器数为 FFFF FF9EH", "D. x = -65, y = 41, x - y 的机器数为 FFFF FF96H"],
+        answer: "C"
+    },
+    {
+        id: 21,
+        question: "已知带符号整数用补码表示，float 型数据用 IEEE 754 标准表示，假定变量 x 的类型只能是 int 或 float。当 x 的机器数为 C800 0000H 时，x 的值可能是",
+        options: ["A. -7×2^27", "B. -2^16", "C. 2^17", "D. 25×2^27"],
+        answer: "A"
+    },
+    {
+        id: 22,
+        question: "已知带符号整数用补码表示，变量X,Y,Z的机器数分别为FFFDH,FFDFH,7FFCH，下列结论中，正确的是",
+        options: ["A. 若X,Y,Z为无符号整数，则Z<X<Y", "B. 若X,Y,Z为无符号整数，则X<Y<Z", "C. 若X,Y,Z为带符号整数，则X<Y<Z", "D. 若X,Y,Z为带符号整数，则Y<X<Z"],
+        answer: "D"
+    },
+    {
+        id: 23,
+        question: "用若干个2K*8位的RAM组成16K*8位存储器，地址0B12H所在芯片的最小地址是",
+        options: ["A. 0000H", "B. 0600H", "C. 0700H", "D. 0800H"],
+        answer: "D"
+    },
+    {
+        id: 24,
+        question: "下列有关RAM和ROM的叙述中，正确的是",
+        options: ["A. RAM和ROM都可以用做Cache", "B. RAM和ROM断电后信息都会丢失", "C. RAM和ROM都需要刷新", "D. RAM和ROM都采用随机存取方式进行信息访问"],
+        answer: "D"
+    },
+    {
+        id: 25,
+        question: "某计算机主存容量为32MB，其中ROM区为4MB，其余为RAM区，按字节编址。现要用1M×8位的ROM芯片和4M×4位的RAM芯片来设计该存储器，则需要上述规格的ROM芯片数和RAM芯片数分别是",
+        options: ["A. 2、7", "B. 4、7", "C. 2、14", "D. 4、14"],
+        answer: "D"
+    },
+    {
+        id: 26,
+        question: "以下访问速度最快的是",
+        options: ["A. ROM", "B. SRAM", "C. DRAM", "D. 硬磁盘"],
+        answer: "B"
+    },
+    {
+        id: 27,
+        question: "下列存储器中，在工作期间需要周期性刷新的是",
+        options: ["A. SRAM", "B. SDRAM", "C. ROM", "D. FLASH"],
+        answer: "B"
+    },
+    {
+        id: 28,
+        question: "某计算机使用4体交叉编址存储器，假定总线上出现的主存地址（十进制）序列为8005，8006，8007，8008，8001，8002，8003，8004，8000，则可能发生访存冲突的地址对是",
+        options: ["A. 8004和8008", "B. 8002和8007", "C. 8001和8008", "D. 8000和8004"],
+        answer: "D"
+    },
+    {
+        id: 29,
+        question: "某计算机主存按字节编址，由4个64M×8位的DRAM芯片采用交叉编址方式构成，并与宽度为32位的存储器总线相连，主存每次最多读写32位数据。若double型变量x的主存地址为804001AH，则读取x需要的存储周期数是",
+        options: ["A. 1", "B. 2", "C. 3", "D. 4"],
+        answer: "C"
+    },
+    {
+        id: 30,
+        question: "某C语言程序段如下：\nfor(i=0；i<=9；i++)\n{\n    temp=1；\n    for(j=0；j<=i；j++)\n        temp *=a[j];\n    sum += temp;\n}\n下列关于数组a的访问局部性的描述中，正确的是",
+        options: ["A. 时间局部性和空间局部性皆有", "B. 无时间局部性，有空间局部性", "C. 有时间局部性，无空间局部性", "D. 时间局部性和空间局部性皆无"],
+        answer: "A"
+    },
+    {
+        id: 31,
+        question: "假定DRAM芯片中存储阵列的行数为r、列数为c，对于一个2K×1位的DRAM芯片，为保证其地址引脚数最少，并尽量减少刷新开销，则r、c的取值分别是",
+        options: ["A. 2048、1", "B. 64、32", "C. 32、64", "D. 1、2048"],
+        answer: "C"
+    },
+    {
+        id: 32,
+        question: "在按字节编址，采用小端方式的32位计算机中，按边界对齐方式为以下C语言结构型变量a分配存储空间。\nStruct record{\n    short x1;\n    int x2;\n} a;\n若a的首地址为2020 FE00H，a的成员变量x2的机器数为1234 0000H，则其中34H所在的存储单元的地址是",
+        options: ["A. 2020 FE03H", "B. 2020 FE04H", "C. 2020 FE05H", "D. 2020 FE06H"],
+        answer: "D"
+    },
+    {
+        id: 33,
+        question: "某计算机的存储总线中有24位地址线和32位数据线，按字编址，字长为32位，若000000H~3FFFFFH为RAM区，则需要512K×8位的RAM芯片数为",
+        options: ["A. 8", "B. 16", "C. 32", "D. 64"],
+        answer: "C"
+    },
+    {
+        id: 34,
+        question: "一次访存过程中不可能发生的是",
+        options: ["A. Cache未命中，Page未命中", "B. Cache命中，Page命中", "C. Cache未命中，Page命中", "D. Cache命中，Page未命中"],
+        answer: "D"
+    },
+    {
+        id: 35,
+        question: "某计算机的Cache共有16块，采用2路组相联映射方式（即每组2块）。每个主存块大小为32字节，按字节编址。主存129号单元所在主存块应装入到的Cache组号是",
+        options: ["A. 0", "B. 2", "C. 4", "D. 6"],
+        answer: "C"
+    },
+    {
+        id: 36,
+        question: "假设某计算机按字编址，Cache有4个行，Cache和主存之间交换的块大小为1个字。若Cache的内容初始为空，采用2路组相联映射方式和LRU替换算法，当访问的主存地址依次为0,4,8,2,0,6,8,6,4,8时，命中Cache的次数是",
+        options: ["A. 1", "B. 2", "C. 3", "D. 4"],
+        answer: "C"
+    },
+    {
+        id: 37,
+        question: "假定主存地址为32位，按字节编址，主存和Cache之间采用直接映射方式，主存块大小为4个字，每字32位，采用回写（WriteBack）方式，则能存放4K字数据的Cache的总容量的位数至少是",
+        options: ["A. 146k", "B. 147K", "C. 148K", "D. 158K"],
+        answer: "C"
+    },
+    {
+        id: 38,
+        question: "Cache的存取周期10ns,主存的存取周期60ns，假设Cache命中率90%，系统使用Cache的性能是不使用Cache的多少倍",
+        options: ["A. 1倍", "B. 2倍", "C. 4倍", "D. 8倍"],
+        answer: "C"
+    },
+    {
+        id: 39,
+        question: "下列关于缺页处理的叙述中，错误的是",
+        options: ["A. 缺页是在地址转换时CPU检测到的一种异常", "B. 缺页处理由操作系统提供的缺页处理程序来完成", "C. 缺页处理程序根据页故障地址从外存读入所缺失的页", "D. 缺页处理完成后回到发生缺页的指令的下一条指令执行"],
+        answer: "D"
+    },
+    {
+        id: 40,
+        question: "有如下C语言程序段：\nfor(k=0；k<1000；k++)\n    a[k]=a[k]+32；\n若数组a及变量k均为int型，int型数据占4B，数据Cache采用直接映射方式、数据区大小为1KB、块大小为16B，该程序段执行前Cache为空，则该程序段执行过程中访问数组a的Cache缺失率约为",
+        options: ["A. 1.25%", "B. 2.5%", "C. 12.5%", "D. 25%"],
+        answer: "C"
+    },
+    {
+        id: 41,
+        question: "下列关于TLB和Cache的叙述中错误的是",
+        options: ["A. 命中率与程序局部性有关", "B. 缺失后都需要去访问主存", "C. 缺失处理都可以由硬件实现", "D. 都由DRAM存储器组成"],
+        answer: "D"
+    },
+    {
+        id: 42,
+        question: "假设某计算机的存储系统由Cache和主存组成，某程序执行过程中访存100次，其中访问Cache缺失（未命中）5次，则Cache的命中率是",
+        options: ["A. 5%", "B. 9.5%", "C. 50%", "D. 95%"],
+        answer: "D"
+    },
+    {
+        id: 43,
+        question: "若计算机主存地址为32位，按字节编址，cache数据区大小为32KB，主存块大小为32B，采用直接映射方法和回写(Write Back)策略，则cache行的位数至少是",
+        options: ["A. 275", "B. 274", "C. 258", "D. 257"],
+        answer: "A"
+    },
+    {
+        id: 44,
+        question: "下列是RISC的特征的是",
+        options: ["I. 指令格式规整且长度一致", "II. 指令种类多", "III. 只有Load/Store指令才能对操作数进行存储访问", "A. 仅I、II", "B. 仅I、III", "C. 仅II、III", "D. I、II、III"],
+        answer: "B"
+    },
+    {
+        id: 45,
+        question: "某机器字长16位，主存按字节编址，转移指令采用相对寻址，由两个字节组成，第一字节为操作码字段，第二字节为相对位移量字段。假定取指令时，每取一个字节PC自动加1。若某转移指令所在主存地址为2000H，相对位移量字段的内容为06H，则该转移指令成功转以后的目标地址是",
+        options: ["A. 2006H", "B. 2007H", "C. 2008H", "D. 2009H"],
+        answer: "C"
+    },
+    {
+        id: 46,
+        question: "假定编译器将赋值语句“x=x+3;”转换为指令“add xaddr, 3”，其中xaddr是x对应的存储单元地址。若执行该指令的计算机采用页式虚拟存储管理方式，并配有相应的TLB，且Cache使用直写（Write Through）方式，则完成该指令功能需要访问主存的次数至少是",
+        options: ["A. 0", "B. 1", "C. 2", "D. 3"],
+        answer: "B"
+    },
+    {
+        id: 47,
+        question: "某计算机采用16位定长指令字格式，操作码位数和寻址方式位数固定，指令系统有48条指令，支持直接、间接、立即、相对4种寻址方式，单地址指令中直接寻址方式可寻址范围是",
+        options: ["A. 0~255", "B. 0~1023", "C. -128~127", "D. -512~511"],
+        answer: "A"
+    },
+    {
+        id: 48,
+        question: "某指令格式如下所示。OP M I D 其中M为寻址方式，I为变址寄存器编号，D为形式地址。若采用先变址后间址的寻址方式，则操作数的有效地址是",
+        options: ["A. I+D", "B. (I)+D", "C. ((I)+D)", "D. ((I))+D"],
+        answer: "C"
+    },
+    {
+        id: 49,
+        question: "某计算机主存空间为4GB，字长为32位，按字节编址，采用32位定长指令字格式。若指令按字边界对齐存放，则程序计数器(PC)和指令寄存器(IR)的位数至少分别是",
+        options: ["A. 30、30", "B. 30、32", "C. 32、30", "D. 32、32"],
+        answer: "B"
+    },
+    {
+        id: 50,
+        question: "下列寻址方式中，最适合按下标顺序访问一维数组元素的是",
+        options: ["A. 相对寻址", "B. 寄存器寻址", "C. 直接寻址", "D. 变址寻址"],
+        answer: "D"
+    },
+    {
+        id: 51,
+        question: "某计算机按字节编址，指令字长固定且只有两种指令格式，其中三地址指令29条，二地址指令107条，每个地址字段为6位，则指令字长至少应该是",
+        options: ["A. 24位", "B. 26位", "C. 28位", "D. 32位"],
+        answer: "A"
+    },
+    {
+        id: 52,
+        question: "按字节编址的计算机中，某double型数组A的首地址为2000H，使用变址寻址和循环结构访问数组A，保存数组下标的变址寄存器初值为0，每次循环取一个数组元素，其偏移地址为变址值乘以sizeof(double)，取完后变址寄存器内容自动加1。若某次循环所取元素的地址为2100H，则进入该次循环时变址寄存器的内容是",
+        options: ["A. 25", "B. 32", "C. 64", "D. 100"],
+        answer: "B"
+    },
+    {
+        id: 53,
+        question: "某指令功能为R[r2]←R[r1]+M[R[r0]]，其两个源操作数分别采用寄存器、寄存器间接寻址方式。对于下列给定部件，该指令在取数及执行过程中需要用到的是",
+        options: ["I. 通用寄存器组(GPRs)", "II. 算术逻辑单元(ALU)", "III. 存储器(Memory)", "IV. 指令译码器(ID)", "A. 仅I、II", "B. 仅I、II、III", "C. 仅II、III、IV", "D. 仅I、III、IV"],
+        answer: "B"
+    },
+    {
+        id: 54,
+        question: "在系统总线的数据线上，不可能传输的是",
+        options: ["A. 指令", "B. 操作数", "C. 中断请求信号", "D. 中断类型号"],
+        answer: "C"
+    },
+    {
+        id: 55,
+        question: "下列寄存器中，汇编语言程序员可见的是",
+        options: ["A. 存储器地址寄存器(MAR)", "B. 存储器数据寄存器(MDR)", "C. 指令指针寄存器(PC)", "D. 指令寄存器(IR)"],
+        answer: "C"
+    },
+    {
+        id: 56,
+        question: "下列选项中，不会引起指令流水线阻塞的是",
+        options: ["A. 数据旁路", "B. 资源冲突", "C. 条件转移", "D. 数据相关"],
+        answer: "A"
+    },
+    {
+        id: 57,
+        question: "中断产生后，以下操作最后执行的是",
+        options: ["A. 关中断", "B. 保护现场", "C. 恢复现场", "D. 寻找中断向量"],
+        answer: "C"
+    },
+    {
+        id: 58,
+        question: "某计算机的指令流水线由四个功能段组成，指令流经各功能段的时间（忽略各功能段之间的缓存时间）分别是90ns、80ns、70ns和60ns，则该计算机的CPU时钟周期至少是",
+        options: ["A. 90ns", "B. 80ns", "C. 70ns", "D. 60ns"],
+        answer: "A"
+    },
+    {
+        id: 59,
+        question: "相对于硬布线控制器，微程序控制器的特点是",
+        options: ["A. 指令执行速度慢，指令功能的修改和扩展容易", "B. 指令执行速度慢，指令功能的修改和扩展难", "C. 指令执行速度快，指令功能的修改和扩展容易", "D. 指令执行速度快，指令功能的修改和扩展难"],
+        answer: "A"
+    },
+    {
+        id: 60,
+        question: "假设某系统总线在一个总线周期中并行传输2字节信息，一个总线周期占用4个时钟周期，总线时钟频率为2MHz，则总线带宽是",
+        options: ["A. 1MB/s", "B. 2MB/s", "C. 4MB/s", "D. 8MB/s"],
+        answer: "A"
+    },
+    {
+        id: 61,
+        question: "总线的时钟频率为100MHz，一个总线周期等于一个时钟周期，一个总线周期并行传送32位数据，总线的带宽是",
+        options: ["A. 100MB/s", "B. 400MB/s", "C. 800MB/s", "D. 3200MB/s"],
+        answer: "B"
+    },
+    {
+        id: 62,
+        question: "在16位总线系统中，总线时钟频率10MHz，假设总线最短传输周期4个时钟周期，计算总线的最大数据传输率是",
+        options: ["A. 4MB/s", "B. 5MB/s", "C. 10MB/s", "D. 16MB/s"],
+        answer: "B"
+    },
+    {
+        id: 63,
+        question: "异步串行传输系统中，字符格式为1个停止位、8个数据位、1个校验位、2个停止位，若要每秒传送100个字节，传送的波特率是",
+        options: ["A. 100bps", "B. 800bps", "C. 1000bps", "D. 1200bps"],
+        answer: "D"
+    },
+    {
+        id: 64,
+        question: "某显卡最大支持1024*768 —24位真彩色，至少需要多少显存？",
+        options: ["A. 768KB", "B. 1MB", "C. 2.3MB", "D. 18.5MB"],
+        answer: "C"
+    },
+    {
+        id: 65,
+        question: "下列选项中，能引起外部中断的事件是",
+        options: ["A. 键盘输入", "B. 除数为0", "C. 浮点运算下溢", "D. 访存缺页"],
+        answer: "A"
+    },
+    {
+        id: 66,
+        question: "下列选项中的英文缩写均为总线标准的是",
+        options: ["A. PCI、CRT、USB、EISA", "B. ISA、CPI、VESA、EISA", "C. ISA、SCSI、RAM、MIPS", "D. ISA、EISA、PCI、PCI-Express"],
+        answer: "D"
+    },
+    {
+        id: 67,
+        question: "单级中断系统中，中断服务程序执行顺序是",
+        options: ["I. 保护现场", "II. 开中断", "III. 关中断", "IV. 保存断点", "V. 中断事件处理", "VI. 恢复现场", "VII. 中断返回", "A. I→V→VI→II→VII", "B. III→I→V→VII", "C. III→IV→V→VI→VII", "D. IV→I→V→VI→VII"],
+        answer: "A"
+    },
+    {
+        id: 68,
+        question: "假定一台计算机的显示存储器用DRAM芯片实现，若要求显示分辨率为1600×1200,颜色深度为24位，帧频为85HZ,显示总带宽的50%用来刷新屏幕，则需要的显存总带宽至少约为",
+        options: ["A. 245Mbps", "B. 979 Mbps", "C. 1958 Mbps", "D. 7834 Mbps"],
+        answer: "D"
+    },
+    {
+        id: 69,
+        question: "某计算机的控制器采用微程序控制方式，微指令中的操作控制字段采用字段直接编码法，共有33个微命令，构成5个互斥类，分别包含7、3、12、5和6个微命令，则操作控制字段至少有",
+        options: ["A. 5位", "B. 6位", "C. 15位", "D. 33位"],
+        answer: "C"
+    },
+    {
+        id: 70,
+        question: "某同步总线的时钟频率为100MHz,宽度为32位,地址/数据线复用,每传输一个地址或数据占用一个时钟周期。若该总线支持突发(猝发)传输方式,则一次“主存写”总线事务传输128位数据所需要的时间至少是",
+        options: ["A. 20ns", "B. 40ns", "C. 50ns", "D. 80ns"],
+        answer: "C"
+    },
+    {
+        id: 71,
+        question: "下列关于USB总线特性的描述中,错误的是",
+        options: ["A. 可实现外设的即插即用和热插拔", "B. 可通过级联方式连接多台外设", "C. 是一种通信总线,可连接不同外设", "D. 同时可传输2位数据,数据传输率高"],
+        answer: "D"
+    },
+    {
+        id: 72,
+        question: "下列选项中,在I/O总线的数据线上传输的信息包括",
+        options: ["I. I/O接口中的命令字", "II. I/O接口中的状态字", "III. 中断类型号", "A. 仅I、II", "B. 仅I、III", "C. 仅II、III", "D. I、II、III"],
+        answer: "D"
+    },
+    {
+        id: 73,
+        question: "响应外部中断的过程中,中断隐指令完成的操作,除保护断点外,还包括",
+        options: ["I. 关中断", "II. 保存通用寄存器的内容", "III. 形成中断服务程序入口地址并送PC", "A. 仅I、II", "B. 仅I、III", "C. 仅II、III", "D. I、II、III"],
+        answer: "B"
+    },
+    {
+        id: 74,
+        question: "中断处理和子程序调用都需要压栈以保护现场,中断处理一定会保存而子程序调用不需要保存其内容的是",
+        options: ["A. 程序计数器", "B. 程序状态字寄存器", "C. 通用数据寄存器", "D. 通用地址寄存器"],
+        answer: "B"
+    },
+    {
+        id: 75,
+        question: "下列给出的指令系统特点中，有利于实现指令流水线的是",
+        options: ["I. 指令格式规整且长度一致", "II. 指令和数据按边界对齐存放", "III. 只有Load/Store指令才能对操作数进行存储访问", "A. 仅I、II", "B. 仅II、III", "C. 仅I、III", "D. I、II、III"],
+        answer: "D"
+    },
+    {
+        id: 76,
+        question: "假定不采用Cache和指令预取技术，且机器处于“开中断”状态，则在下列有关指令执行的叙述中，错误的是",
+        options: ["A. 每个指令周期中CPU都至少访问内存一次", "B. 每个指令周期一定大于或等于一个CPU时钟周期", "C. 空操作指令的指令周期中任何寄存器的内容都不会被改变", "D. 当前程序在每条指令执行结束时都可能被外部中断打断"],
+        answer: "C"
+    },
+    {
+        id: 77,
+        question: "在系统总线的数据线上，不可能传输的是",
+        options: ["A. 指令", "B. 操作数", "C. 握手（应答）信号", "D. 中断类型号"],
+        answer: "C"
+    },
+    {
+        id: 78,
+        question: "某计算机有五级中断L4~L0，中断屏蔽字为M4M3M2M1M0，Mi=1（0≤i≤4）表示对Li级中断进行屏蔽。若中断响应优先级从高到低的顺序是L0→L1→L2→L3→L4，且要求中断处理优先级从高到低的顺序为L4→L0→L2→L1→L3，则L1的中断处理程序中设置的中断屏蔽字是",
+        options: ["A. 11110", "B. 01101", "C. 00011", "D. 01010"],
+        answer: "D"
+    },
+    {
+        id: 79,
+        question: "某计算机处理器主频为50MHz，采用定时查询方式控制设备A的I/O，查询程序运行一次所用的时钟周期数至少为500。在设备A工作期间，为保证数据不丢失，每秒需对其查询至少200次，则CPU用于设备A的I/O的时间占整个CPU时间百分比至少是",
+        options: ["A. 0.02%", "B. 0.05%", "C. 0.20%", "D. 0.50%"],
+        answer: "C"
+    },
+    {
+        id: 80,
+        question: "某CPU主频为1.03MHz，采用4级指令流水线，每个流水段的执行需要1个时钟周期。假定CPU执行了100条指令，在其执行过程中，没有发生任何流水线阻塞，此时流水线的吞吐率为",
+        options: ["A. 0.25MIPS", "B. 0.97MIPS", "C. 1.0MIPS", "D. 1.03MIPS"],
+        answer: "C"
+    },
+    {
+        id: 81,
+        question: "下列选项中，用于设备和设备控制器（I/O接口）之间互连的接口标准是",
+        options: ["A. PCI", "B. USB", "C. AGP", "D. PCI-Express"],
+        answer: "B"
+    },
+    {
+        id: 82,
+        question: "某磁盘的转速为10000转/分，平均寻道时间是6ms，磁盘传输速率是20MB/s，磁盘控制器延迟为0.2ms，读取一个4KB的扇区所需的平均时间约为",
+        options: ["A. 9ms", "B. 9.4ms", "C. 12ms", "D. 12.4ms"],
+        answer: "B"
+    },
+    {
+        id: 83,
+        question: "下列关于中断I/O方式和DMA方式比较的叙述中，错误的是",
+        options: ["A. 中断I/O方式请求的是CPU处理时间，DMA方式请求的是总线使用权", "B. 中断响应发生在一条指令执行结束后，DMA响应发生在一个总线事务完成后", "C. 中断I/O方式下数据传送通过软件完成，DMA方式下数据传送由硬件完成", "D. 中断I/O方式适用于所有外部设备，DMA方式仅适用于快速外部设备"],
+        answer: "D"
+    },
+    {
+        id: 84,
+        question: "采用指令Cache与数据Cache分离的主要目的是",
+        options: ["A. 降低Cache的缺失损失", "B. 提高Cache的命中率", "C. 降低CPU平均访存时间", "D. 减少指令流水线资源冲突"],
+        answer: "D"
+    },
+    {
+        id: 85,
+        question: "某计算机有16个通用寄存器，采用32位定长指令字，操作码字段（含寻址方式位）为8位，Store指令的源操作数和目的操作数分别采用寄存器直接寻址和基址寻址方式。若基址寄存器可使用任一通用寄存器，且偏移量用补码表示，则Store指令中偏移量的取值范围是",
+        options: ["A. -32768~+32767", "B. -32767~+32768", "C. -65536~+65535", "D. -65535~+65536"],
+        answer: "A"
+    },
+    {
+        id: 86,
+        question: "某计算机采用微程序控制器，共有32条指令，公共的取指令微程序包含2条微指令，各指令对应的微程序除公共的取指令微程序外平均由4条微指令组成，采用断定法（下地址字段法）确定下条微指令地址，则微指令中下址字段的位数至少是",
+        options: ["A. 5", "B. 6", "C. 8", "D. 9"],
+        answer: "C"
+    },
+    {
+        id: 87,
+        question: "某同步总线数据线有32根，总线时钟频率为66MHz，每个时钟周期传送两次数据(上升沿和下降沿各传送一次数据)，该总线的最大数据传输率(总线带宽)是",
+        options: ["A. 132MB/s", "B. 264MB/s", "C. 528MB/s", "D. 1056MB/s"],
+        answer: "C"
+    },
+    {
+        id: 88,
+        question: "一次总线事务中，主设备只需给出一个首地址，从设备就能从首地址开始的若干连续单元读出或写入多个数据。这种总线事务方式称为",
+        options: ["A. 并行传输", "B. 串行传输", "C. 突发传输", "D. 同步传输"],
+        answer: "C"
+    },
+    {
+        id: 89,
+        question: "下列有关I/O接口的叙述中，错误的是",
+        options: ["A. 状态端口和控制端口可以合用同一个寄存器", "B. I/O接口中CPU可访问的寄存器称为I/O端口", "C. 采用独立编址方式时，I/O端口地址和主存地址可能相同", "D. 采用统一编址方式时，CPU不能用访存指令访问I/O端口"],
+        answer: "D"
+    },
+    {
+        id: 90,
+        question: "若某设备中断请求的响应和处理时间为100ns，每400ns发出一次中断请求，中断响应所允许的最长延迟时间为50ns，则在该设备持续工作过程中，CPU用于该设备的I/O时间占整个CPU时间的百分比至少是",
+        options: ["A. 12.5%", "B. 25%", "C. 37.5%", "D. 50%"],
+        answer: "B"
+    },
+    {
+        id: 91,
+        question: "若磁盘转速为7200转/分，平均寻道时间为8ms,每个磁道包含1000个扇区，则访问一个扇区的平均存取时间大约是",
+        options: ["A. 8.1ms", "B. 12.2ms", "C. 16.3ms", "D. 20.5ms"],
+        answer: "B"
+    },
+    {
+        id: 92,
+        question: "在采用中断I/O方式控制打印输出的情况下，CPU和打印控制接口中的I/O端口之间交换的信息不可能是",
+        options: ["A. 打印字符", "B. 主存地址", "C. 设备状态", "D. 控制命令"],
+        answer: "B"
+    },
+    {
+        id: 93,
+        question: "在无转发机制的五段基本流水线(取指、译码/读寄存器、运算、访存、写回寄存器)中，下列指令序列存在数据冒险的指令对是",
+        options: ["I1: add R1,R2,R3; (R2)+(R3)→R1", "I2: add R5,R2,R4; (R2)+(R4)→R5", "I3: add R4,R5,R3; (R5)+(R3)→R4", "I4: add R5,R2,R6; (R2)+(R6)→R5", "A. I1和I2", "B. I2和I3", "C. I2和I4", "D. I3和I4"],
+        answer: "B"
+    },
+    {
+        id: 94,
+        question: "异常是指令执行过程中在处理器内部发生的特殊事件，中断是来自处理器外部的请求事件。下列关于中断或异常情况的叙述中，错误的是",
+        options: ["A. “访存时缺页”属于中断", "B. “整数除以0”属于异常", "C. “DMA传送结束”属于中断", "D. “存储保护错”属于异常"],
+        answer: "A"
+    },
+    {
+        id: 95,
+        question: "下列关于超标量流水线特性的叙述中，正确的是",
+        options: ["I. 能缩短流水线功能段的处理时间", "II. 能在一个时钟周期内同时发射多条指令", "III. 能结合动态调度技术提高指令执行并行性", "A. 仅II", "B. 仅I、III", "C. 仅II、III", "D. I、II和III"],
+        answer: "C"
+    },
+    {
+        id: 96,
+        question: "下列关于主存储器（MM）和控制存储器（CS）的叙述中，错误的是",
+        options: ["A. MM在CPU外，CS在CPU内", "B. MM按地址访问，CS按内容访问", "C. MM存储指令和数据，CS存储微指令", "D. MM用RAM和ROM实现，CS用ROM实现"],
+        answer: "B"
+    },
+    {
+        id: 97,
+        question: "下列关于多总线结构的叙述中，错误的是",
+        options: ["A. 靠近CPU的总线速度较快", "B. 存储器总线可支持突发传送方式", "C. 总线之间须通过桥接器相连", "D. PCI-Express×16采用并行传输方式"],
+        answer: "D"
+    },
+    {
+        id: 98,
+        question: "I/O指令实现的数据传送通常发生在",
+        options: ["A. I/O设备和I/O端口之间", "B. 通用寄存器和I/O设备之间", "C. I/O端口和I/O端口之间", "D. 通用寄存器和I/O端口之间"],
+        answer: "D"
+    },
+    {
+        id: 99,
+        question: "下列关于多重中断系统的叙述中，错误的是",
+        options: ["A. 在一条指令执行结束时响应中断", "B. 中断处理期间CPU处于关中断状态", "C. 中断请求的产生与当前指令的执行无关", "D. CPU通过采样中断请求信号检测中断请求"],
+        answer: "B"
+    },
+    {
+        id: 100,
+        question: "某计算机的控制器采用微程序控制方式，微指令的操作控制字段采用字段直接编码法，共20个微命令，构成5个互斥类，分别包含6、3、5、2、4个微命令，则操作控制字段至少有",
+        options: ["A. 5位", "B. 6位", "C. 13位", "D. 20位"],
+        answer: "C"
+    },
+    {
+        id: 101,
+        question: "若某计算机最复杂指令的执行需要完成5个子功能，分别由功能部件A~E实现，各功能部件所需时间分别为80ps、50ps、50ps、70ps和50ps，采用流水线方式执行指令，流水段寄存器延时为20ps，则CPU时钟周期至少为",
+        options: ["A. 60ps", "B. 70ps", "C. 80ps", "D. 100ps"],
+        answer: "D"
+    },
+    {
+        id: 102,
+        question: "下列选项中，可提高同步总线数据传输率的是",
+        options: ["I. 增加总线宽度", "II. 提高总线工作频率", "III. 支持突发传输", "IV. 采用地址/数据线复用", "A. 仅I、II", "B. 仅I、II、III", "C. 仅III、IV", "D. I、II、III和IV"],
+        answer: "B"
+    },
+    {
+        id: 103,
+        question: "下列关于外部I/O中断的叙述中，正确的是",
+        options: ["A. 中断控制器按所接收中断请求的先后次序进行中断优先级排队", "B. CPU响应中断时，通过执行中断隐指令完成通用寄存器的保护", "C. CPU只有在处于中断允许状态时，才能响应外部设备的中断请求", "D. 有中断请求时，CPU立即暂停当前指令执行，转去执行中断服务程序"],
+        answer: "C"
+    },
+    {
+        id: 104,
+        question: "在采用“取指、译码/取数、执行、访存、写回”5段流水线的处理器中，执行如下指令序列，其中s0、s1、s2、s3和t2表示寄存器编号。\nI1：add s2，s1，s0            //R[s2]←R[s1]+R[s0]\nI2：load s3，0(t2)          //R[s3]←M[R[t2]+0]\nI3：add s2，s2 s3            //R[s2]←R[s2]+R[s3]\nI4：store s2，0(t2)         //M[R[t2]+0]←R[s2]\n下列指令对中，不存在数据冒险的是",
+        options: ["A. I1和I3", "B. I2和I3", "C. I2和I4", "D. I3和I4"],
+        answer: "C"
+    },
+    {
+        id: 105,
+        question: "假定一台计算机采用3通道存储器总线，配套的内存条型号为DDR3-1333，即内存条所接插的存储器总线的工作频率为1333MHz、总线宽度为64位，则存储器总线的总带宽大约是",
+        options: ["A. 10.66GB/s", "B. 32GB/s", "C. 64GB/s", "D. 96GB/s"],
+        answer: "B"
+    },
+    {
+        id: 106,
+        question: "下列关于磁盘存储器的叙述中，错误的是",
+        options: ["A. 磁盘的格式化容量比非格式化容量小", "B. 扇区中包含数据、地址和校验等信息", "C. 磁盘存储器的最小读写单位为一个字节", "D. 磁盘存储器由磁盘控制器、磁盘驱动器和盘片组成"],
+        answer: "C"
+    },
+    {
+        id: 107,
+        question: "某设备以中断方式与CPU进行数据交换，CPU主频为1 GHz，设备接口中的数据缓冲寄存器为32位，设备的数据传输率为50kB/s。若每次中断开销(包括中断响应和中断处理)为1000个时钟周期，则CPU用于该设备输入/输出的时间占整个CPU时间的百分比最多是",
+        options: ["A. 1.25%", "B. 2.5%", "C. 5%", "D. 12.5%"],
+        answer: "A"
+    },
+    {
+        id: 108,
+        question: "下列关于DMA方式的叙述中，正确的是",
+        options: ["I. DMA传送前由设备驱动程序设置传送参数", "II.数据传送前由DMA控制器请求总线使用权", "III.数据传送由DMA控制器直接控制总线完成", "IV.DMA传送结束后的处理由中断服务程序完成", "A. 仅I、II", "B. 仅I、III、IV", "C. 仅II、III、IV", "D. I、II、III、IV"],
+        answer: "D"
+    },
+    {
+        id: 109,
+        question: "下列给出的部件中其位数（宽度）一定与机器字长相同的是",
+        options: ["I. ALU", "II. 指令寄存器", "III. 通用寄存器", "IV. 浮点寄存器", "A. I、II", "B. I、III", "C. II、III", "D. II、III、IV"],
+        answer: "B"
+    },
+    {
+        id: 110,
+        question: "下列给出的处理器类型中理想情况下CPI为1的是",
+        options: ["I. 单周期CPU", "II. 多周期CPU", "III. 基本流水线CPU", "IV. 超标量流水线CPU", "A. I、II", "B. I、III", "C. II、IV", "D. III、IV"],
+        answer: "B"
+    },
+    {
+        id: 111,
+        question: "下列事件中属于外部中断事件的是",
+        options: ["I. 访存时缺页", "II. 定时器延时（不确定）", "III. 网络数据包到达", "A. I、II", "B. II、III", "C. I、III", "D. I、II、III"],
+        answer: "B"
+    },
+    {
+        id: 112,
+        question: "外部中断包括不可屏蔽中断（NMI）和可屏蔽中断，下列关于外部中断的叙述中错误的是",
+        options: ["A. CPU处于关中断状态时也能响应NMI请求", "B. 一旦可屏蔽中断请求信号有效，CPU将立即响应", "C. 不可屏蔽中断的优先级比可屏蔽中断的优先级高", "D. 可通过中断屏蔽字改变可屏蔽中断的处理优先级"],
+        answer: "B"
+    },
+    {
+        id: 113,
+        question: "若设备采用周期挪用DMA方式进行输入输出，每次DMA传送的数据块大小为512字节，相应的I/O接口中有一个32位数数据缓冲寄存器，对于数据输入过程，下列叙述中错误的是",
+        options: ["A. 每准备好32位数据，DMA控制器就发出一次总线请求", "B. 相对于CPU，DMA控制器的总线使用权的优先级更高", "C. 在整个数据块的传送过程中，CPU不可以访问主存储器", "D. 数据块传送结束时，会产生“DMA传送结束”的中断请求"],
+        answer: "C"
+    },
+    {
+        id: 114,
+        question: "下列存储器中，汇编语言程序员可见的是",
+        options: ["(1). 指令寄存器", "(2). 微指令寄存器", "(3). 基址寄存器", "(4). 标志状态寄存器", "A. (1)、(2)", "B. (1)、(3)", "C. (2)、(3)", "D. (3)、(4)"],
+        answer: "D"
+    },
+    {
+        id: 115,
+        question: "下列关于总线的叙述中，错误的是",
+        options: ["A. 总线是在两个或多个部件之间进行数据交换的传输介质", "B. 同步总线由时钟信号定时，时钟频率不一定等于工作频率", "C. 异步总线由握手信号定时，一次握手过程完成一位数据交换", "D. 突发(Burst)传送总线事务可以在总线上连续传送多个数据"],
+        answer: "C"
+    },
+    {
+        id: 116,
+        question: "某计算机主频为1GHz，程序P运行过程中，共执行了10000条指令，其中，80%的指令执行平均需1个时钟周期，20%的指令执行平均需10个时钟周期。程序P的平均CPI和CPU执行时间分别是",
+        options: ["A. 2.8，28μs", "B. 28，28μs", "C. 2.8，28ms", "D. 28，28ms"],
+        answer: "A"
+    },
+    {
+        id: 117,
+        question: "32位补码所能表示的整数范围是",
+        options: ["A. −2^32∼2^31−1", "B. −2^31∼2^31−1", "C. −2^32∼2^32−1", "D. −2^31∼2^32−1"],
+        answer: "B"
+    },
+    {
+        id: 118,
+        question: "-0.4375的IEEE754单精度浮点数表示为",
+        options: ["A. BEE0 0000H", "B. BF60 0000H", "C. BF70 0000H", "D. C0E0 0000H"],
+        answer: "A"
+    },
+    {
+        id: 119,
+        question: "某计算机主存地址为24位，采用分页虚拟存储管理方式，虚拟地址空间大小为4GB，页大小为4KB，按字节编址。某进程的页表部分内容如下表所示。当CPU访问虚拟地址00082840H，虚-实地址转换的结果是",
+        options: ["A. 得到主存地址02 4840H", "B. 得到主存地址18 0840H", "C. 得到主存地址01 8840H", "D. 检测到缺页异常"],
+        answer: "C"
+    },
+    {
+        id: 120,
+        question: "某计算机主存地址为32位，按字节编址，某Cache的数据区容量为32KB，主存块大小为64B，采用8路组相联映射方式，该Cache中比较器的个数和位数分别为",
+        options: ["A. 8，20", "B. 8，23", "C. 64，20", "D. 64，23"],
+        answer: "A"
+    },
+    {
+        id: 121,
+        question: "某内存条包含8个8192×8192×8位的DRAM芯片，按字节编址，支持突发传送方式，对应存储器总线宽度为64位，每个DRAM芯片内有一个行缓冲区。下列关于该内存条的叙述中，不正确的是",
+        options: ["A. 内存条的容量为512MB", "B. 采用多模块交叉编址方式", "C. 芯片的地址引脚为26位", "D. 芯片内行缓冲有8192×8位"],
+        answer: "C"
+    },
+    {
+        id: 122,
+        question: "下列选项中，属于指令集体系结构（ISA）规定的内容是",
+        options: ["I. 指令字格式和指令类型", "II. CPU的时钟周期", "III. 通用寄存器个数和位数", "A. 仅I、II", "B. 仅I、III", "C. 仅II、IV", "D. 仅I、III、IV"],
+        answer: "B"
+    },
+    {
+        id: 123,
+        question: "设计某指令系统时，假设采用16位定长指令字格式，操作码使用扩展编码方式，地址码为6位，包含零地址、一地址和二地址3种格式的指令。若二地址指令有12条，一地址指令有254条，则零地址指令的条数最多为",
+        options: ["A. 0", "B. 2", "C. 64", "D. 128"],
+        answer: "D"
+    },
+    {
+        id: 124,
+        question: "将高级语言源程序转换为可执行目标文件的主要过程是",
+        options: ["A. 预处理→编译→汇编→链接", "B. 预处理→汇编→编译→链接", "C. 预处理→编译→链接→汇编", "D. 预处理→汇编→链接→编译"],
+        answer: "A"
+    },
+    {
+        id: 125,
+        question: "下列关于中断I/O方式的叙述中，不正确的是",
+        options: ["A. 适用于键盘、针式打印机等字符型设备", "B. 外设和主机之间的数据传送通过软件完成", "C. 外设准备数据的时间应小于中断处理时间", "D. 外设为某进程准备数据时CPU可运行其他进程"],
+        answer: "C"
+    },
+    {
+        id: 126,
+        question: "若机器M的主频为1.5GHz，在M上执行程序P的指令条数为5×10^5，P的平均CPI为1.2，则P在M上的指令执行速度和用户CPU时间分别为",
+        options: ["A. 0.8GIPS、0.4ms", "B. 0.8GIPS、0.4μs", "C. 1.25GIPS、0.4ms", "D. 1.25GIPS、0.4μs"],
+        answer: "C"
+    },
+    {
+        id: 127,
+        question: "若short型变量x=-8190，则x的机器数为",
+        options: ["A. E002H", "B. E001H", "C. 9FFFH", "D. 9FFEH"],
+        answer: "A"
+    },
+    {
+        id: 128,
+        question: "下列关于并行处理技术的叙述中，不正确的是",
+        options: ["A. 多核处理器属于MIMD结构", "B. 向量处理器属于SIMD结构", "C. 硬件多线程技术只可用于多核处理器", "D. SMP中所有处理器共享单一物理地址空间"],
+        answer: "C"
+    },
+    {
+        id: 129,
+        question: "某计算机的CPU有30根地址线，按字节编址，CPU和主存芯片连接时，要求主存芯片占满所有可能存储地址空间，并且RAM区和ROM区所分配的空间大小比为3:1，若RAM在连续低地址区，ROM在连续高地址区，则ROM的地址范围是",
+        options: ["A. 00000000H~0FFFFFFH", "B. 10000000H~2FFFFFFH", "C. 30000000H~3FFFFFFH", "D. 40000000H~4FFFFFFH"],
+        answer: "C"
+    },
+    {
+        id: 130,
+        question: "已知x、y为int类型，当x=100，y=200时，执行x-y指令得到的溢出标志OF和借位标志CF分别为0,1，那么当x=10，y=-20时，执行该指令得到OF和CF分别是",
+        options: ["A. 0,0", "B. 0,1", "C. 1,0", "D. 1,1"],
+        answer: "B"
+    },
+    {
+        id: 131,
+        question: "某运算类型指令中有一个地址码为通用寄存器编号，对应通用寄存器中存放的是操作数或操作数地址，CPU区分两者的依据是",
+        options: ["A. 操作数的寻址方式", "B. 操作数的编码方式", "C. 通用寄存器编号", "D. 通用寄存器的内容"],
+        answer: "A"
+    },
+    {
+        id: 132,
+        question: "某存储器总线宽度为64位，总线时钟频率为1GHz，在总线上传输一个数据或地址需要一个时钟周期，不支持突发传送方式，若通过该总线连接CPU和主存，主存每次准备一个64位数据需要6ns，主存块大小为32B，则读取一个主存块需要的时间为",
+        options: ["A. 8ns", "B. 11ns", "C. 26ns", "D. 32ns"],
+        answer: "D"
+    },
+    {
+        id: 133,
+        question: "下列关于硬件和异常/中断关系的叙述中，错误的是",
+        options: ["A. CPU在执行一条指令过程中检测异常事件", "B. CPU在执行完一条指令时检测中断请求信号", "C. 开中断中CPU检测到中断请求后就进行中断响应", "D. 外部设备通过中断控制器向CPU发中断结束信号"],
+        answer: "D"
+    },
+    {
+        id: 134,
+        question: "下列关于I/O控制方式的叙述中错误的是",
+        options: ["A. 查询方式通过CPU执行查询程序进行I/O操作", "B. 中断方式下，通过CPU执行中断服务程序进行I/O操作", "C. DMA方式下，通过CPU执行DMA传送程序进行I/O操作", "D. 对于SSD、网络适配器等高速设备，采用DMA方式输入/输出"],
+        answer: "C"
+    },
+    {
+        id: 135,
+        question: "C语言代码如下：\nint i=32777;\nshort si= i;\nint j= si;\n执行上述代码段后，j的值是",
+        options: ["A. -32777", "B. -32759", "C. 32759", "D. 32777"],
+        answer: "B"
+    },
+    {
+        id: 136,
+        question: "下列事件中，不是在MMU地址转换过程检测的是",
+        options: ["A. 访问越权", "B. Cache缺失", "C. 页面缺失", "D. TLB缺失"],
+        answer: "B"
+    },
+    {
+        id: 137,
+        question: "某运算类型指令中有一个地址码为通用寄存器编号，对应通用寄存器中存放的是操作数或操作数地址，CPU区分两者的依据是",
+        options: ["A. 操作数的寻址方式", "B. 操作数的编码方式", "C. 通用寄存器编号", "D. 通用寄存器的内容"],
+        answer: "A"
+    },
+    {
+        id: 138,
+        question: "下列关于硬件和异常/中断关系的叙述中，错误的是",
+        options: ["A. CPU在执行一条指令过程中检测异常事件", "B. CPU在执行完一条指令时检测中断请求信号", "C. 开中断中CPU检测到中断请求后就进行中断响应", "D. 外部设备通过中断控制器向CPU发中断结束信号"],
+        answer: "D"
+    },
+    {
+        id: 139,
+        question: "下列关于I/O控制方式的叙述中错误的是",
+        options: ["A. 查询方式通过CPU执行查询程序进行I/O操作", "B. 中断方式下，通过CPU执行中断服务程序进行I/O操作", "C. DMA方式下，通过CPU执行DMA传送程序进行I/O操作", "D. 对于SSD、网络适配器等高速设备，采用DMA方式输入/输出"],
+        answer: "C"
+    },
+    {
+        id: 140,
+        question: "将汇编语言程序中实现特定功能的指令序列定义成一条伪指令。下列选项中，CPU能理解并直接执行的是",
+        options: ["I. 伪指令", "II. 微指令", "III. 机器指令", "IV. 汇编指令", "A. 仅I和IV", "B. 仅II和III", "C. 仅III和IV", "D. 仅I、III和IV"],
+        answer: "B"
+    },
+    {
+        id: 141,
+        question: "某科学实验中，需要使用大量的整型参数，为了保证表数精度的基础上提高运算速度，需要选择合理的数据表示方法。若整型参数a和β的取值范围分别为-2^20~-2^20、-2^40~2^40，则下列选项中，a和β最适宜采用的数据表示方法分别是",
+        options: ["A. 32位整数，32位整数", "B. 单精度浮点数，单精度浮点数", "C. 32位整数，双精度浮点数", "D. 单精度浮点数，双精度浮点数"],
+        answer: "C"
+    },
+    {
+        id: 142,
+        question: "下列关于整数乘法运算的叙述中，错误的是",
+        options: ["A. 用阵列乘法器实现乘运算可以在一个时钟周期内完成", "B. 用ALU和位移器实现的乘运算无法在一个时钟周期内完成", "C. 变量与常数的乘运算可以编译优化为若干条移位及加/减运算指令", "D. 两个变量的乘运算无法编译转换为位移及加法等指令的循环实现"],
+        answer: "D"
+    },
+    {
+        id: 143,
+        question: "对于页式虚拟存储管理系统，下列关于存储器层次结构的叙述中，错误的是",
+        options: ["A. Cache-主存层次的交换单位为主存块，主存-外存层次的交换单位为页", "B. Cache-主存层次替换算法由硬件实现，主存-外存层次由软件实现", "C. Cache-主存层次可采用回写法写策略，主存-外存层次通常采用回写法写策略", "D. Cache-主存层次可采用直接映射方式，主存-外存层次通常采用直接映射方式"],
+        answer: "D"
+    },
+    {
+        id: 144,
+        question: "某计算机按字节编址，采用页式虚拟存储管理方式，虚拟地址为32位，主存地址为30位，页大小为1KB。若TLB共有32个表项，采用4路组相联映射方式，则TLB表项中标记字段的位数至少是",
+        options: ["A. 17", "B. 18", "C. 19", "D. 20"],
+        answer: "C"
+    },
+    {
+        id: 145,
+        question: "存储器总线的时钟频率为420MHz，总线宽度为64位，每个时钟周期传送2次数据，支持突发传输，最多传8次，第一个时钟传地址和读写命令，从第4~7个时钟连续传8次。总线带宽最大传输速率为",
+        options: ["A. 3.84GB/s", "B. 6.72GB/s", "C. 30.72GB/s", "D. 53.76GB/s"],
+        answer: "B"
+    },
+    {
+        id: 146,
+        question: "关于中断I/O方式，错误的是",
+        options: ["A. 中断屏蔽字用于确定中断响应的优先级", "B. 保存断点和程序状态字在中断响应阶段完成", "C. 保存通用寄存器和设置新中断屏蔽字由软件实现", "D. 单重中断方式下，中断处理时CPU处于关中断状态"],
+        answer: "A"
+    },
+    {
+        id: 147,
+        question: "DMA方式中，DMA控制器控制的数据传输通路位于",
+        options: ["A. CPU和主存之间", "B. CPU和DMA控制器之间", "C. 设备接口和主存之间", "D. 设备接口和DMA控制器之间"],
+        answer: "C"
+    },
+    {
+        id: 148,
+        question: "假设8位字长的计算机中，两个带符号整数x和y的补码表示分别为x_补=A3H，y_补=75H，则通过补码加减运算器得到的x-y的值及OF标志分别为",
+        options: ["A. 24, 0", "B. 24, 1", "C. 46, 0", "D. 46, 1"],
+        answer: "D"
+    },
+    {
+        id: 149,
+        question: "已知float型变量用IEEE754单精度浮点数格式表示。若float型变量x的机器数为47300000H，则x的值为",
+        options: ["A. 0.375×2^14", "B. 1.375×2^14", "C. 0.375×2^15", "D. 1.375×2^15"],
+        answer: "D"
+    },
+    {
+        id: 150,
+        question: "下列选项中，由指令体系结构（ISA）规定的是",
+        options: ["A. 是否采用阵列乘法器", "B. 是否采用定长指令字格式", "C. 是否采用微程序控制器", "D. 是否采用单总线数据通路"],
+        answer: "B"
+    },
+    {
+        id: 151,
+        question: "下列关于RISC的叙述中，错误的是",
+        options: ["A. 多采用硬连线方式实现控制器", "B. 通常采用Load/Store型指令设计风格", "C. 难以采用流水线数据通路实现微架构", "D. 多采用寄存器传递过程调用时的参数"],
+        answer: "C"
+    },
+    {
+        id: 152,
+        question: "下列关于CPI和CPU时钟周期的叙述中，错误的是",
+        options: ["A. 不同类型指令的CPI可能不一样", "B. 程序的CPI与Cache缺失率无关", "C. 单周期CPU的时钟周期以最耗时指令所用的时间为准", "D. 流水线CPU的时钟周期以最长流水段所用时间为准"],
+        answer: "B"
+    },
+    {
+        id: 153,
+        question: "下列关于CPU中数据通路和控制器的叙述中，错误的是",
+        options: ["A. 通用寄存器组中应该包含程序计数器", "B. 控制器中一定包含指令操作码的译码电路", "C. 单周期CPU中的控制器比多周期CPU中的更简单", "D. 流水线CPU需解决数据相关和控制相关等冒险问题"],
+        answer: "A"
+    },
+    {
+        id: 154,
+        question: "某处理器总线采用同步，并行传输方式，每个总线时钟周期传送4次数据（quad-pumped技术），若该总线的工作频率为1333MHz（实际单位是MT/s，表示每秒传送1333M次），总线宽度为64位，则总线带宽约为",
+        options: ["A. 10.66GB/s", "B. 42.66GB/s", "C. 85.31GB/s", "D. 341.25GB/s"],
+        answer: "B"
+    },
+    {
+        id: 155,
+        question: "下列设备中，适合采用DMA输入输出的设备是",
+        options: ["I. 键盘", "II. 网卡", "III. 固态硬盘", "IV. 针式打印机", "A. I、II", "B. II、III", "C. II、IV", "D. III、IV"],
+        answer: "B"
+    },
+    {
+        id: 156,
+        question: "下列选项中，会触发外部中断请求的事件是",
+        options: ["A. DMA传送结束", "B. 总线事务结束", "C. 页故障处理结束", "D. 执行断点指令"],
+        answer: "A"
+    },
+    {
+        id: 157,
+        question: "某32位计算机按字节编址，采用小端方式存放数据，编译器按边界对齐方式为以下C语言结构型数组变量employee分配存储空间。\nstruct record{\n    int id;\n    char name[10];\n    int salary;\n} employee[200];\n数组employee的起始地址为0000A0B0H，employee[1].id的机器数为12345678H，问56H所在的地址是",
+        options: ["A. 0000A0C3H", "B. 0000A0C4H", "C. 0000A0C5H", "D. 0000A0C6H"],
+        answer: "C"
+    },
+    {
+        id: 158,
+        question: "用16K×8位的SRAM芯片构成16K×32位的存储器",
+        options: ["课本P122 3-1"],
+        answer: "课本P122 3-1"
+    },
+    {
+        id: 159,
+        question: "课本P122 3-3",
+        options: ["课本P122 3-3"],
+        answer: "课本P122 3-3"
+    },
+    {
+        id: 160,
+        question: "课本P122 3-5",
+        options: ["课本P122 3-5"],
+        answer: "课本P122 3-5"
+    },
+    {
+        id: 161,
+        question: "指令流水线有取指（IF）、译码（ID）、执行（EX）、访存（MEM）、写回（WB）五个过程段，连续输入20条指令，\n（1）画出流水处理的时空图，假设时钟周期为100ns。\n（2）求该流水线的实际吞吐率。\n（3）求该流水线的加速比。",
+        options: ["（1）流水处理的时空图", "（2）实际吞吐率=20I/(24*100ns)=8.33MIPS", "（3）加速比=(20*5*100)/(24*100)=4.17"],
+        answer: "（1）流水处理的时空图\n（2）实际吞吐率=20I/(24*100ns)=8.33MIPS\n（3）加速比=(20*5*100)/(24*100)=4.17"
+    },
+    {
+        id: 162,
+        question: "指令流水线有取指（IF）、译码（ID）、执行（EX）、写回（WB）四个过程段，连续输入20条指令，\n画出流水处理的时空图，假设时钟周期为100ns。\n求该流水线的实际吞吐率。\n求该流水线的加速比。",
+        options: ["（1）流水处理的时空图", "（2）实际吞吐率=20I/(24*100ns)=8.33MIPS", "（3）加速比=(20*5*100)/(24*100)=4.17"],
+        answer: "（1）流水处理的时空图\n（2）实际吞吐率=20I/(24*100ns)=8.33MIPS\n（3）加速比=(20*5*100)/(24*100)=4.17"
+    },
+    {
+        id: 163,
+        question: "设CPU共有12根地址线，8根数据线，并用-MREQ（低电平有效）作访存控制信号，R/-W作读写命令信号（高电平为读，低电平为写），现有4片1K×8位的RAM芯片与CPU相连，试回答：\n（1）画出CPU与存储芯片的连接图；\n（2）写出每片RAM的地址范围；",
+        options: ["（1）连接图", "（2）地址范围"],
+        answer: "（1）连接图\n（2）地址范围"
+    },
+    {
+        id: 164,
+        question: "设CPU共有11根地址线，16根数据线，并用-CS（低电平有效）作访存控制信号，R/-W作读写命令信号，现有4片1K×8位的RAM芯片与CPU相连，试回答：\n（1）画出CPU与存储芯片的连接图；\n（2）写出每片RAM的地址范围；",
+        options: ["（1）连接图", "（2）地址范围"],
+        answer: "（1）连接图\n（2）地址范围"
+    },
+    {
+        id: 165,
+        question: "某磁盘存储器转速为3000转/分，共有4个记录盘面，100扇区/道，512字节/扇区，共有512道，求：\n（1）磁盘存储器的存储容量；\n（2）磁盘数据传输率；\n（3）平均等待时间。",
+        options: ["（1）存储容量", "（2）数据传输率", "（3）平均等待时间"],
+        answer: "（1）存储容量\n（2）数据传输率\n（3）平均等待时间"
+    },
+    {
+        id: 166,
+        question: "某机有四个中断源,中断响应的优先次序按A、B、C、D由高向低排序,\n现要求中断处理次序改为BDC A ，写出各中断源的屏蔽字。",
+        options: ["中断源", "屏蔽字", "A", "B", "C", "D"],
+        answer: "中断源\n屏蔽字\nA\n1 0 0 0\nB\n1 1 1 1\nC\n1 0 1 1\nD\n1 0 0 1"
+    },
+    {
+        id: 167,
+        question: "某机有四个中断源,中断响应的优先次序按A、B、C、D由高向低排序,\n现要求中断处理次序改为B  C  D  A，写出各级中断的屏蔽码。",
+        options: ["中断源", "屏蔽字", "A", "B", "C", "D"],
+        answer: "中断源\n屏蔽字\nA\n1 0 1 0\nB\n1 1 1 1\nC\n0 0 1 0\nD\n1 0 1 1"
+    },
+    {
+        id: 168,
+        question: "某机有五个中断源,中断响应的优先次序按ABCDE由高向低排序,\n现要求中断处理次序改为BEDAC，写出各级中断的屏蔽码。",
+        options: ["中断源", "屏蔽字", "A", "B", "C", "D", "E"],
+        answer: "中断源\n屏蔽字\nA\n1 0 1 0 0\nB\n1 1 1 1 1\nC\n0 0 1 0 0\nD\n1 0 1 1 0\nE\n1 0 1 1 1"
+    },
+    {
+        id: 169,
+        question: "下列给出4条微指令I1~I4及所包含的微命令控制信号，设计微指令操作控制字段格式，要求所使用的控制位最少，而且保持微指令本身内在的并行性。\n微指令\n所包含的微命令控制信号\nI1\na  b  c  d  e \nI2\na     c  d      f  \nI3\n      c  d          g\nI4\na  b                g",
+        options: ["控制位共6位，其中4位直接控制：a b c d （efg用2位字段直接编码）", "对应微操作：00：无操作 01：e 10：f 11：g"],
+        answer: "控制位共6位，其中4位直接控制：a b c d （efg用2位字段直接编码）\n对应微操作：00：无操作 01：e 10：f 11：g"
+    },
+    {
+        id: 170,
+        question: "下列给出4条微指令I1~I4及所包含的微命令控制信号，设计微指令操作控制字段格式，要求所使用的控制位最少，而且保持微指令本身内在的并行性。\n微指令\n所包含的微命令控制信号\nI1\na  b  c  d  \nI2\na     c  d      e  f  \nI3\n      c  d          g  h\nI4\na  b                g",
+        options: ["控制位共6位，其中2位直接控制：a c （bdfgh用4位字段直接编码）", "对应微操作：00：无操作 01：b 10：d 11：e 100：f 101：g 110：h"],
+        answer: "控制位共6位，其中2位直接控制：a c （bdfgh用4位字段直接编码）\n对应微操作：00：无操作 01：b 10：d 11：e 100：f 101：g 110：h"
+    },
+    {
+        id: 171,
+        question: "某磁盘存储器转速为6000转/分，有2个磁头，共有1024磁道，50扇区/道,1024B/扇区，求：\n（1）磁盘存储器的存储容量；\n（2）磁盘数据传输率；\n（3）平均等待时间。",
+        options: ["（1）存储容量", "（2）数据传输率", "（3）平均等待时间"],
+        answer: "（1）存储容量：2*1024*50*1024B=100MB\n（2）数据传输率：50*1024B *100转/秒=5MB/s\n（3）平均等待时间：6000转/分=>0.01秒/转, 平均等待时间为转半圈时间=5ms"
+    },
+    {
+        id: 172,
+        question: "设单精度浮点数格式为IEEE754标准。写出-5.25所对应的机器数。-5.25=-101.01，规格化后为-1.0101*2^2",
+        options: ["1    10000001   01010000000000000000000", "1    10000001   10100000000000000000000", "1    10000010   01010000000000000000000", "1    10000010   10100000000000000000000"],
+        answer: "1    10000001   01010000000000000000000"
+    },
+    {
+        id: 173,
+        question: "某计算机主存地址为24位，采用分页虚拟存储管理方式，虚拟地址空间大小为4GB，页大小为4KB，按字节编址。某进程的页表部分内容如下表所示。当CPU访问虚拟地址00082840H，虚-实地址转换的结果是",
+        options: ["A. 得到主存地址02 4840H", "B. 得到主存地址18 0840H", "C. 得到主存地址01 8840H", "D. 检测到缺页异常"],
+        answer: "C"
+    },
+    {
+        id: 174,
+        question: "某计算机主存地址为32位，按字节编址，某Cache的数据区容量为32KB，主存块大小为64B，采用8路组相联映射方式，该Cache中比较器的个数和位数分别为",
+        options: ["A. 8，20", "B. 8，23", "C. 64，20", "D. 64，23"],
+        answer: "A"
+    },
+    {
+        id: 175,
+        question: "某内存条包含8个8192×8192×8位的DRAM芯片，按字节编址，支持突发传送方式，对应存储器总线宽度为64位，每个DRAM芯片内有一个行缓冲区。下列关于该内存条的叙述中，不正确的是",
+        options: ["A. 内存条的容量为512MB", "B. 采用多模块交叉编址方式", "C. 芯片的地址引脚为26位", "D. 芯片内行缓冲有8192×8位"],
+        answer: "C"
+    },
+    {
+        id: 176,
+        question: "下列选项中，属于指令集体系结构（ISA）规定的内容是",
+        options: ["I. 指令字格式和指令类型", "II. CPU的时钟周期", "III. 通用寄存器个数和位数", "A. 仅I、II", "B. 仅I、III", "C. 仅II、IV", "D. 仅I、III、IV"],
+        answer: "B"
+    },
+    {
+        id: 177,
+        question: "设计某指令系统时，假设采用16位定长指令字格式，操作码使用扩展编码方式，地址码为6位，包含零地址、一地址和二地址3种格式的指令。若二地址指令有12条，一地址指令有254条，则零地址指令的条数最多为",
+        options: ["A. 0", "B. 2", "C. 64", "D. 128"],
+        answer: "D"
+    },
+    {
+        id: 178,
+        question: "将高级语言源程序转换为可执行目标文件的主要过程是",
+        options: ["A. 预处理→编译→汇编→链接", "B. 预处理→汇编→编译→链接", "C. 预处理→编译→链接→汇编", "D. 预处理→汇编→链接→编译"],
+        answer: "A"
+    },
+    {
+        id: 179,
+        question: "下列关于中断I/O方式的叙述中，不正确的是",
+        options: ["A. 适用于键盘、针式打印机等字符型设备", "B. 外设和主机之间的数据传送通过软件完成", "C. 外设准备数据的时间应小于中断处理时间", "D. 外设为某进程准备数据时CPU可运行其他进程"],
+        answer: "C"
+    },
+    {
+        id: 180,
+        question: "某计算机主频为1.5GHz，在M上执行程序P的指令条数为5×10^5，P的平均CPI为1.2，则P在M上的指令执行速度和用户CPU时间分别为",
+        options: ["A. 0.8GIPS、0.4ms", "B. 0.8GIPS、0.4μs", "C. 1.25GIPS、0.4ms", "D. 1.25GIPS、0.4μs"],
+        answer: "C"
+    },
+    {
+        id: 181,
+        question: "若short型变量x=-8190，则x的机器数为",
+        options: ["A. E002H", "B. E001H", "C. 9FFFH", "D. 9FFEH"],
+        answer: "A"
+    },
+    {
+        id: 182,
+        question: "下列关于并行处理技术的叙述中，不正确的是",
+        options: ["A. 多核处理器属于MIMD结构", "B. 向量处理器属于SIMD结构", "C. 硬件多线程技术只可用于多核处理器", "D. SMP中所有处理器共享单一物理地址空间"],
+        answer: "C"
+    },
+    {
+        id: 183,
+        question: "某计算机的CPU有30根地址线，按字节编址，CPU和主存芯片连接时，要求主存芯片占满所有可能存储地址空间，并且RAM区和ROM区所分配的空间大小比为3:1，若RAM在连续低地址区，ROM在连续高地址区，则ROM的地址范围是",
+        options: ["A. 00000000H~0FFFFFFH", "B. 10000000H~2FFFFFFH", "C. 30000000H~3FFFFFFH", "D. 40000000H~4FFFFFFH"],
+        answer: "C"
+    },
+    {
+        id: 184,
+        question: "已知x、y为int类型，当x=100，y=200时，执行x-y指令得到的溢出标志OF和借位标志CF分别为0,1，那么当x=10，y=-20时，执行该指令得到OF和CF分别是",
+        options: ["A. 0,0", "B. 0,1", "C. 1,0", "D. 1,1"],
+        answer: "B"
+    },
+    {
+        id: 185,
+        question: "某运算类型指令中有一个地址码为通用寄存器编号，对应通用寄存器中存放的是操作数或操作数地址，CPU区分两者的依据是",
+        options: ["A. 操作数的寻址方式", "B. 操作数的编码方式", "C. 通用寄存器编号", "D. 通用寄存器的内容"],
+        answer: "A"
+    },
+    {
+        id: 186,
+        question: "某存储器总线宽度为64位，总线时钟频率为1GHz，在总线上传输一个数据或地址需要一个时钟周期，不支持突发传送方式，若通过该总线连接CPU和主存，主存每次准备一个64位数据需要6ns，主存块大小为32B，则读取一个主存块需要的时间为",
+        options: ["A. 8ns", "B. 11ns", "C. 26ns", "D. 32ns"],
+        answer: "D"
+    },
+    {
+        id: 187,
+        question: "下列关于硬件和异常/中断关系的叙述中，错误的是",
+        options: ["A. CPU在执行一条指令过程中检测异常事件", "B. CPU在执行完一条指令时检测中断请求信号", "C. 开中断中CPU检测到中断请求后就进行中断响应", "D. 外部设备通过中断控制器向CPU发中断结束信号"],
+        answer: "D"
+    },
+    {
+        id: 188,
+        question: "下列关于I/O控制方式的叙述中错误的是",
+        options: ["A. 查询方式通过CPU执行查询程序进行I/O操作", "B. 中断方式下，通过CPU执行中断服务程序进行I/O操作", "C. DMA方式下，通过CPU执行DMA传送程序进行I/O操作", "D. 对于SSD、网络适配器等高速设备，采用DMA方式输入/输出"],
+        answer: "C"
+    },
+    {
+        id: 189,
+        question: "C语言代码如下：\nint i=32777;\nshort si= i;\nint j= si;\n执行上述代码段后，j的值是",
+        options: ["A. -32777", "B. -32759", "C. 32759", "D. 32777"],
+        answer: "B"
+    },
+    {
+        id: 190,
+        question: "下列事件中，不是在MMU地址转换过程检测的是",
+        options: ["A. 访问越权", "B. Cache缺失", "C. 页面缺失", "D. TLB缺失"],
+        answer: "B"
+    },
+    {
+        id: 191,
+        question: "某运算类型指令中有一个地址码为通用寄存器编号，对应通用寄存器中存放的是操作数或操作数地址，CPU区分两者的依据是",
+        options: ["A. 操作数的寻址方式", "B. 操作数的编码方式", "C. 通用寄存器编号", "D. 通用寄存器的内容"],
+        answer: "A"
+    },
+    {
+        id: 192,
+        question: "下列关于硬件和异常/中断关系的叙述中，错误的是",
+        options: ["A. CPU在执行一条指令过程中检测异常事件", "B. CPU在执行完一条指令时检测中断请求信号", "C. 开中断中CPU检测到中断请求后就进行中断响应", "D. 外部设备通过中断控制器向CPU发中断结束信号"],
+        answer: "D"
+    },
+    {
+        id: 193,
+        question: "下列关于I/O控制方式的叙述中错误的是",
+        options: ["A. 查询方式通过CPU执行查询程序进行I/O操作", "B. 中断方式下，通过CPU执行中断服务程序进行I/O操作", "C. DMA方式下，通过CPU执行DMA传送程序进行I/O操作", "D. 对于SSD、网络适配器等高速设备，采用DMA方式输入/输出"],
+        answer: "C"
+    },
+    {
+        id: 194,
+        question: "将汇编语言程序中实现特定功能的指令序列定义成一条伪指令。下列选项中，CPU能理解并直接执行的是",
+        options: ["I. 伪指令", "II. 微指令", "III. 机器指令", "IV. 汇编指令", "A. 仅I和IV", "B. 仅II和III", "C. 仅III和IV", "D. 仅I、III和IV"],
+        answer: "B"
+    },
+    {
+        id: 195,
+        question: "某科学实验中，需要使用大量的整型参数，为了保证表数精度的基础上提高运算速度，需要选择合理的数据表示方法。若整型参数a和β的取值范围分别为-2^20~-2^20、-2^40~2^40，则下列选项中，a和β最适宜采用的数据表示方法分别是",
+        options: ["A. 32位整数，32位整数", "B. 单精度浮点数，单精度浮点数", "C. 32位整数，双精度浮点数", "D. 单精度浮点数，双精度浮点数"],
+        answer: "C"
+    },
+    {
+        id: 196,
+        question: "下列关于整数乘法运算的叙述中，错误的是",
+        options: ["A. 用阵列乘法器实现乘运算可以在一个时钟周期内完成", "B. 用ALU和位移器实现的乘运算无法在一个时钟周期内完成", "C. 变量与常数的乘运算可以编译优化为若干条移位及加/减运算指令", "D. 两个变量的乘运算无法编译转换为位移及加法等指令的循环实现"],
+        answer: "D"
+    },
+    {
+        id: 197,
+        question: "对于页式虚拟存储管理系统，下列关于存储器层次结构的叙述中，错误的是",
+        options: ["A. Cache-主存层次的交换单位为主存块，主存-外存层次的交换单位为页", "B. Cache-主存层次替换算法由硬件实现，主存-外存层次由软件实现", "C. Cache-主存层次可采用回写法写策略，主存-外存层次通常采用回写法写策略", "D. Cache-主存层次可采用直接映射方式，主存-外存层次通常采用直接映射方式"],
+        answer: "D"
+    },
+    {
+        id: 198,
+        question: "某计算机按字节编址，采用页式虚拟存储管理方式，虚拟地址为32位，主存地址为30位，页大小为1KB。若TLB共有32个表项，采用4路组相联映射方式，则TLB表项中标记字段的位数至少是",
+        options: ["A. 17", "B. 18", "C. 19", "D. 20"],
+        answer: "C"
+    },
+    {
+        id: 199,
+        question: "存储器总线的时钟频率为420MHz，总线宽度为64位，每个时钟周期传送2次数据，支持突发传输，最多传8次，第一个时钟传地址和读写命令，从第4~7个时钟连续传8次。总线带宽最大传输速率为",
+        options: ["A. 3.84GB/s", "B. 6.72GB/s", "C. 30.72GB/s", "D. 53.76GB/s"],
+        answer: "B"
+    },
+    {
+        id: 200,
+        question: "关于中断I/O方式，错误的是",
+        options: ["A. 中断屏蔽字用于确定中断响应的优先级", "B. 保存断点和程序状态字在中断响应阶段完成", "C. 保存通用寄存器和设置新中断屏蔽字由软件实现", "D. 单重中断方式下，中断处理时CPU处于关中断状态"],
+        answer: "A"
+    },
+    {
+        id: 201,
+        question: "DMA方式中，DMA控制器控制的数据传输通路位于",
+        options: ["A. CPU和主存之间", "B. CPU和DMA控制器之间", "C. 设备接口和主存之间", "D. 设备接口和DMA控制器之间"],
+        answer: "C"
+    },
+    {
+        id: 202,
+        question: "假设8位字长的计算机中，两个带符号整数x和y的补码表示分别为x_补=A3H，y_补=75H，则通过补码加减运算器得到的x-y的值及OF标志分别为",
+        options: ["A. 24, 0", "B. 24, 1", "C. 46, 0", "D. 46, 1"],
+        answer: "D"
+    },
+    {
+        id: 203,
+        question: "已知float型变量用IEEE754单精度浮点数格式表示。若float型变量x的机器数为47300000H，则x的值为",
+        options: ["A. 0.375×2^14", "B. 1.375×2^14", "C. 0.375×2^15", "D. 1.375×2^15"],
+        answer: "D"
+    },
+    {
+        id: 204,
+        question: "下列选项中，由指令体系结构（ISA）规定的是",
+        options: ["A. 是否采用阵列乘法器", "B. 是否采用定长指令字格式", "C. 是否采用微程序控制器", "D. 是否采用单总线数据通路"],
+        answer: "B"
+    },
+    {
+        id: 205,
+        question: "下列关于RISC的叙述中，错误的是",
+        options: ["A. 多采用硬连线方式实现控制器", "B. 通常采用Load/Store型指令设计风格", "C. 难以采用流水线数据通路实现微架构", "D. 多采用寄存器传递过程调用时的参数"],
+        answer: "C"
+    },
+    {
+        id: 206,
+        question: "下列关于CPI和CPU时钟周期的叙述中，错误的是",
+        options: ["A. 不同类型指令的CPI可能不一样", "B. 程序的CPI与Cache缺失率无关", "C. 单周期CPU的时钟周期以最耗时指令所用的时间为准", "D. 流水线CPU的时钟周期以最长流水段所用时间为准"],
+        answer: "B"
+    },
+    {
+        id: 207,
+        question: "下列关于CPU中数据通路和控制器的叙述中，错误的是",
+        options: ["A. 通用寄存器组中应该包含程序计数器", "B. 控制器中一定包含指令操作码的译码电路", "C. 单周期CPU中的控制器比多周期CPU中的更简单", "D. 流水线CPU需解决数据相关和控制相关等冒险问题"],
+        answer: "A"
+    },
+    {
+        id: 208,
+        question: "某处理器总线采用同步，并行传输方式，每个总线时钟周期传送4次数据（quad-pumped技术），若该总线的工作频率为1333MHz（实际单位是MT/s，表示每秒传送1333M次），总线宽度为64位，则总线带宽约为",
+        options: ["A. 10.66GB/s", "B. 42.66GB/s", "C. 85.31GB/s", "D. 341.25GB/s"],
+        answer: "B"
+    },
+    {
+        id: 209,
+        question: "下列设备中，适合采用DMA输入输出的设备是",
+        options: ["I. 键盘", "II. 网卡", "III. 固态硬盘", "IV. 针式打印机", "A. I、II", "B. II、III", "C. II、IV", "D. III、IV"],
+        answer: "B"
+    },
+    {
+        id: 210,
+        question: "下列选项中，会触发外部中断请求的事件是",
+        options: ["A. DMA传送结束", "B. 总线事务结束", "C. 页故障处理结束", "D. 执行断点指令"],
+        answer: "A"
+    },
+    {
+        id: 211,
+        question: "某32位计算机按字节编址，采用小端方式存放数据，编译器按边界对齐方式为以下C语言结构型数组变量employee分配存储空间。\nstruct record{\n    int id;\n    char name[10];\n    int salary;\n} employee[200];\n数组employee的起始地址为0000A0B0H，employee[1].id的机器数为12345678H，问56H所在的地址是",
+        options: ["A. 0000A0C3H", "B. 0000A0C4H", "C. 0000A0C5H", "D. 0000A0C6H"],
+        answer: "C"
+    }
+]
+      };
+
+      // 当前选择的题库和其他变量
+      let currentSubject = '';
+      let originalQuestions = [];
+
+      // 全局变量
+      let shuffledQuestions = [];
+      let userAnswers = {};
+      let results = {};
+      let usedQuestionIndices = [];
+      let currentMode = ''; // 当前模式：'exam' 或 'practice'
+      
+      // 作答计时器变量
+      let timerInterval;
+      let startTime = null; // 记录考试开始时间
+
+      // 密码保护逻辑
+      const password = 'jy5247';
+      const passwordProtection = document.getElementById('password-protection');
+      const subjectSelection = document.getElementById('subject-selection');
+      const modeSelection = document.getElementById('mode-selection');
+      const questionCountSelection = document.getElementById('question-count-selection');
+      const passwordInput = document.getElementById('password-input');
+      const passwordSubmit = document.getElementById('password-submit');
+      const errorMessage = document.getElementById('error-message');
+
+      // 主题切换功能
+      const themeToggle = document.getElementById('theme-toggle');
+      const themeIcon = themeToggle.querySelector('i');
+      
+      themeToggle.addEventListener('click', function() {
+          document.body.classList.toggle('dark-theme');
+          if(document.body.classList.contains('dark-theme')) {
+              themeIcon.className = 'fas fa-sun';
+          } else {
+              themeIcon.className = 'fas fa-moon';
+          }
+      });
+
+      passwordSubmit.addEventListener('click', function() {
+          if (passwordInput.value === password) {
+              passwordProtection.classList.add('hidden');
+              subjectSelection.classList.remove('hidden');
+          } else {
+              errorMessage.style.display = 'block';
+              passwordInput.value = '';
+              passwordInput.focus();
+          }
+      });
+      
+      // 回车提交密码
+      passwordInput.addEventListener('keypress', function(e) {
+          if (e.key === 'Enter') {
+              passwordSubmit.click();
+          }
+      });
+
+      // 题库选择事件处理
+      const maogaiBtn = document.getElementById('maogai-btn');
+      const xigaiBtn = document.getElementById('xigai-btn');
+      const computerBtn = document.getElementById('computer-btn');
+
+      maogaiBtn.addEventListener('click', function() {
+          currentSubject = 'maogai';
+          originalQuestions = questionBanks.maogai;
+          subjectSelection.classList.add('hidden');
+          modeSelection.classList.remove('hidden');
+          updateQuestionCountDisplay();
+      });
+
+      xigaiBtn.addEventListener('click', function() {
+          currentSubject = 'xigai';
+          originalQuestions = questionBanks.xigai;
+          subjectSelection.classList.add('hidden');
+          modeSelection.classList.remove('hidden');
+          updateQuestionCountDisplay();
+      });
+
+      computerBtn.addEventListener('click', function() {
+          currentSubject = 'computer';
+          originalQuestions = questionBanks.computer;
+          subjectSelection.classList.add('hidden');
+          modeSelection.classList.remove('hidden');
+          updateQuestionCountDisplay();
+      });
+
+      // 更新题目数量显示
+      function updateQuestionCountDisplay() {
+          const countInfo = document.querySelector('#question-count-selection p');
+          const questionCountInput = document.getElementById('question-count-input');
+          if (countInfo && questionCountInput) {
+              let subjectName = '';
+              switch(currentSubject) {
+                  case 'maogai': subjectName = '毛概'; break;
+                  case 'xigai': subjectName = '习概'; break;
+                  case 'computer': subjectName = '计算机组成原理'; break;
+                  default: subjectName = '未知';
+              }
+              const maxCount = originalQuestions.length;
+              countInfo.textContent = `题库总数：${maxCount}题 (${subjectName}题库)`;
+              questionCountInput.max = maxCount;
+              questionCountInput.placeholder = `请输入题目数量（1-${maxCount}）`;
+          }
+      }
+
+      // 模式选择逻辑
+      const practiceModeBtn = document.getElementById('practice-mode-btn');
+      const examModeBtn = document.getElementById('exam-mode-btn');
+      const currentModeDisplay = document.getElementById('current-mode');
+
+      practiceModeBtn.addEventListener('click', function() {
+          currentMode = 'practice';
+          modeSelection.classList.add('hidden');
+          questionCountSelection.classList.remove('hidden');
+          currentModeDisplay.innerHTML = '<i class="fas fa-book"></i> 练习模式 - 答题后可立即查看答案';
+          currentModeDisplay.style.color = '#27ae60';
+      });
+
+      examModeBtn.addEventListener('click', function() {
+          currentMode = 'exam';
+          modeSelection.classList.add('hidden');
+          questionCountSelection.classList.remove('hidden');
+          currentModeDisplay.innerHTML = '<i class="fas fa-clipboard-check"></i> 考试模式 - 提交后统一查看结果';
+          currentModeDisplay.style.color = '#3498db';
+      });
+
+      // 题目数量选择逻辑
+      const questionCountInput = document.getElementById('question-count-input');
+      const questionCountSubmit = document.getElementById('question-count-submit');
+      const countErrorMessage = document.getElementById('count-error-message');
+      const examContent = document.getElementById('exam-content');
+
+      questionCountSubmit.addEventListener('click', function() {
+          const count = parseInt(questionCountInput.value);
+          if (isNaN(count) || count < 1 || count > originalQuestions.length) {
+              countErrorMessage.style.display = 'block';
+              return;
+          }
+          // 确保隐藏考试结果区域，并显示考试区域（考试区域可能保留上次结果）
+          document.getElementById('results').style.display = 'none';
+          document.getElementById('exam-form').style.display = 'block';
+          // 无论什么模式都显示提交按钮
+          document.getElementById('submit-btn').style.display = 'block';
+          
+          questionCountSelection.classList.add('hidden');
+          examContent.classList.remove('hidden');
+          initExam(count);
+      });
+      
+      // 回车确认题目数量
+      questionCountInput.addEventListener('keypress', function(e) {
+          if (e.key === 'Enter') {
+              questionCountSubmit.click();
+          }
+      });
+
+      // 洗牌函数（Fisher-Yates 算法）
+      function shuffle(array) {
+          let currentIndex = array.length, temporaryValue, randomIndex;
+          while (currentIndex !== 0) {
+              randomIndex = Math.floor(Math.random() * currentIndex);
+              currentIndex -= 1;
+              temporaryValue = array[currentIndex];
+              array[currentIndex] = array[randomIndex];
+              array[randomIndex] = temporaryValue;
+          }
+          return array;
+      }
+      
+      // 初始化考试：打乱题目、清空旧状态、启动计时器
+      function initExam(count) {
+          clearInterval(timerInterval);
+          startTime = Date.now();
+          timerInterval = setInterval(updateElapsedTime, 1000);
+          
+          // 显示当前模式和题库信息
+          let subjectName = '';
+          switch(currentSubject) {
+              case 'maogai': subjectName = '毛概'; break;
+              case 'xigai': subjectName = '习概'; break;
+              case 'computer': subjectName = '计算机组成原理'; break;
+              default: subjectName = '未知';
+          }
+          const modeIcon = currentMode === 'practice' ? '<i class="fas fa-book"></i>' : '<i class="fas fa-clipboard-check"></i>';
+          const modeName = currentMode === 'practice' ? '练习模式' : '考试模式';
+          currentModeDisplay.innerHTML = `${modeIcon} ${modeName} - ${subjectName}题库`;
+          currentModeDisplay.style.color = currentMode === 'practice' ? '#2ecc71' : '#3498db';
+          
+          // 清空状态
+          userAnswers = {};
+          results = {};
+          shuffledQuestions = [];
+          usedQuestionIndices = [];
+          document.getElementById('exam-form').innerHTML = '';
+          document.getElementById('progress-bar').style.width = '0';
+          document.getElementById('timer').innerHTML = '<i class="fas fa-clock"></i> 已用时: 00:00';
+          document.getElementById('final-time').textContent = "";
+          
+          // 打乱题库并选择题目
+          const shuffled = shuffle(originalQuestions.slice());
+          const actualCount = Math.min(count, shuffled.length);
+          for (let i = 0; i < actualCount; i++) {
+              shuffledQuestions.push(shuffled[i]);
+              usedQuestionIndices.push(i);
+          }
+          
+          // 生成题目
+          const examForm = document.getElementById('exam-form');
+          shuffledQuestions.forEach((q, index) => {
+              const questionDiv = document.createElement('div');
+              questionDiv.className = 'question fade-in';
+              questionDiv.id = `question-${q.id}`;
+              
+              let optionsHtml = '';
+              q.options.forEach(option => {
+                  const optionLetter = option.charAt(0);
+                  optionsHtml += `
+                      <div class="option" data-option="${optionLetter}">
+                          <label>
+                              <input type="radio" name="question-${q.id}" value="${optionLetter}">
+                              ${option}
+                          </label>
+                      </div>
+                  `;
+              });
+              
+              questionDiv.innerHTML = `
+                  <div class="question-title">
+                      <span class="question-number">${index + 1}. </span>
+                      ${q.question}
+                  </div>
+                  <div class="options">
+                      ${optionsHtml}
+                  </div>
+                  <div class="answer-feedback" id="feedback-${q.id}"></div>
+              `;
+              examForm.appendChild(questionDiv);
+          });
+          
+          updateProgressBar();
+          
+          // 如果是练习模式，添加选项点击事件监听
+          if (currentMode === 'practice') {
+              document.querySelectorAll('.option').forEach(option => {
+                  option.addEventListener('click', handlePracticeModeSelection);
+              });
+          }
+      }
+      
+      // 练习模式下，点击选项后的处理
+      function handlePracticeModeSelection(e) {
+          const optionDiv = this;
+          const questionDiv = optionDiv.closest('.question');
+          const questionId = parseInt(questionDiv.id.replace('question-', ''));
+          const selectedOption = optionDiv.dataset.option;
+          const feedbackDiv = document.getElementById(`feedback-${questionId}`);
+          
+          // 查找对应的题目和正确答案
+          const question = shuffledQuestions.find(q => q.id === questionId);
+          const correctAnswer = question.answer;
+          
+          // 保存用户答案
+          userAnswers[questionId] = selectedOption;
+          
+          // 更新UI：标记所有选项
+          questionDiv.querySelectorAll('.option').forEach(opt => {
+              opt.classList.remove('selected');
+              if (opt.dataset.option === selectedOption) {
+                  opt.classList.add('selected');
+              }
+          });
+          
+          // 显示反馈
+          feedbackDiv.style.display = 'block';
+          if (selectedOption === correctAnswer) {
+              feedbackDiv.className = 'answer-feedback correct';
+              feedbackDiv.innerHTML = `<i class="fas fa-check-circle"></i> 正确！答案是：${correctAnswer}`;
+          } else {
+              feedbackDiv.className = 'answer-feedback incorrect';
+              feedbackDiv.innerHTML = `<i class="fas fa-times-circle"></i> 错误！正确答案是：${correctAnswer}`;
+          }
+          
+          updateProgressBar();
+      }
+      
+      // 更新时间显示（格式：mm:ss）
+      function updateElapsedTime() {
+          const elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
+          const minutes = Math.floor(elapsedSeconds / 60);
+          const seconds = elapsedSeconds % 60;
+          const formattedTime = 
+              (minutes < 10 ? "0" + minutes : minutes) + ":" + 
+              (seconds < 10 ? "0" + seconds : seconds);
+          document.getElementById('timer').innerHTML = '<i class="fas fa-clock"></i> 已用时: ' + formattedTime;
+      }
+      
+      function updateProgressBar() {
+          const answered = Object.keys(userAnswers).length;
+          const total = shuffledQuestions.length;
+          const percentage = (answered / total) * 100;
+          document.getElementById('progress-bar').style.width = `${percentage}%`;
+      }
+      
+      function calculateResults() {
+          clearInterval(timerInterval);
+          const totalElapsed = Math.floor((Date.now() - startTime) / 1000);
+          const minutes = Math.floor(totalElapsed / 60);
+          const seconds = totalElapsed % 60;
+          const formattedTotalTime = 
+              (minutes < 10 ? "0" + minutes : minutes) + ":" + 
+              (seconds < 10 ? "0" + seconds : seconds);
+          
+          let correct = 0;
+          let incorrectQuestions = []; // 收集错题
+          shuffledQuestions.forEach(q => {
+              const isCorrect = (userAnswers[q.id] === q.answer);
+              results[q.id] = {
+                  question: q,
+                  userAnswer: userAnswers[q.id] || '',
+                  isCorrect: isCorrect
+              };
+              
+              if (isCorrect) {
+                  correct++;
+              } else {
+                  incorrectQuestions.push(q); // 添加到错题集
+              }
+          });
+          
+          // 保存错题集到sessionStorage
+          if (incorrectQuestions.length > 0) {
+              sessionStorage.setItem('incorrectQuestions', JSON.stringify(incorrectQuestions));
+          } else {
+              sessionStorage.removeItem('incorrectQuestions');
+          }
+          
+          const accuracy = ((correct / shuffledQuestions.length) * 100).toFixed(1);
+          
+          // 更新结果统计
+          document.getElementById('score').textContent = correct;
+          document.getElementById('total').textContent = shuffledQuestions.length;
+          document.getElementById('accuracy').textContent = `${accuracy}%`;
+          document.getElementById('final-time').textContent = "总作答用时：" + formattedTotalTime;
+          
+          // 更新结果统计卡片
+          document.getElementById('summary-score').textContent = correct;
+          document.getElementById('summary-total').textContent = shuffledQuestions.length;
+          document.getElementById('summary-accuracy').textContent = `${accuracy}%`;
+          document.getElementById('summary-time').textContent = formattedTotalTime;
+          
+          displayResults('all');
+      }
+      
+      function submitExam() {
+          // 检查是否全部作答，否则滚动定位到未答题目，不再显示提醒弹窗
+          for (let i = 0; i < shuffledQuestions.length; i++) {
+              const q = shuffledQuestions[i];
+              if (!userAnswers[q.id] || userAnswers[q.id] === '') {
+                  const questionElem = document.getElementById(`question-${q.id}`);
+                  if (questionElem) {
+                      document.querySelectorAll('.question').forEach(q => q.classList.remove('current-question'));
+                      questionElem.classList.add('current-question');
+                      questionElem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  }
+                  return;
+              }
+          }
+          
+          calculateResults();
+          
+          // 隐藏考试区域、显示结果区域并自动滚动到页面顶部
+          document.getElementById('exam-form').style.display = 'none';
+          document.getElementById('submit-btn').style.display = 'none';
+          document.getElementById('results').style.display = 'block';
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      
+      function displayResults(filter) {
+          const resultDetails = document.getElementById('result-details');
+          resultDetails.innerHTML = '';
+          Object.values(results).forEach((result, index) => {
+              if (filter === 'incorrect' && result.isCorrect) return;
+              const resultDiv = document.createElement('div');
+              resultDiv.className = `question fade-in ${result.isCorrect ? 'correct' : 'incorrect'}`;
+              resultDiv.innerHTML = `
+                  <div class="question-title">
+                      <span class="question-number">${index + 1}. </span>
+                      ${result.question.question}
+                      <span class="status ${result.isCorrect ? 'correct' : 'incorrect'}">
+                          ${result.isCorrect ? '<i class="fas fa-check"></i> 正确' : '<i class="fas fa-times"></i> 错误'}
+                      </span>
+                  </div>
+                  <div class="options">
+                      ${result.question.options.map(option => {
+                          const letter = option.charAt(0);
+                          let className = '';
+                          let icon = '';
+                          
+                          if (letter === result.question.answer) {
+                              className = 'correct';
+                              icon = '<i class="fas fa-check-circle"></i>';
+                          } else if (letter === result.userAnswer && letter !== result.question.answer) {
+                              className = 'incorrect';
+                              icon = '<i class="fas fa-times-circle"></i>';
+                          }
+                          
+                          return `
+                              <div class="option ${className}">
+                                  ${option} ${icon}
+                              </div>
+                          `;
+                      }).join('')}
+                  </div>
+              `;
+              resultDetails.appendChild(resultDiv);
+          });
+      }
+      
+      // 监听考试模式下的答案选项变化
+      document.addEventListener('change', function(e) {
+          if (currentMode === 'exam' && e.target.type === 'radio' && e.target.name.startsWith('question-')) {
+              const questionId = parseInt(e.target.name.replace('question-', ''));
+              userAnswers[questionId] = e.target.value;
+              
+              // 更新选项UI
+              const questionDiv = e.target.closest('.question');
+              questionDiv.querySelectorAll('.option').forEach(opt => {
+                  opt.classList.remove('selected');
+              });
+              e.target.closest('.option').classList.add('selected');
+              
+              updateProgressBar();
+          }
+      });
+      
+      // 提交答案按钮事件
+      document.getElementById('submit-btn').addEventListener('click', submitExam);
+      
+      // "重新测试"按钮：保持原题数重新考试，重新打乱顺序，并自动滚动到第一题
+      document.getElementById('restart-btn').addEventListener('click', function() {
+          clearInterval(timerInterval);
+          document.getElementById('exam-form').style.display = 'block';
+          document.getElementById('submit-btn').style.display = 'block'; // 无论什么模式都显示提交按钮
+          document.getElementById('results').style.display = 'none';
+          
+          // 重新初始化考试，打乱题目顺序
+          initExam(shuffledQuestions.length);
+          
+          // 在initExam完成后，滚动到第一题位置
+          setTimeout(() => {
+              // 如果有题目，获取第一个题目并滚动到它的位置
+              const firstQuestion = document.querySelector('.question');
+              if (firstQuestion) {
+                  firstQuestion.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }
+          }, 100); // 短暂延迟确保DOM已更新
+      });
+      
+      // "重新选择题库"按钮：完全重置状态后，回到题库选择界面
+      document.getElementById('reselect-btn').addEventListener('click', function() {
+          clearInterval(timerInterval);
+          timerInterval = null;
+          startTime = null;
+          userAnswers = {};
+          results = {};
+          shuffledQuestions = [];
+          usedQuestionIndices = [];
+          currentSubject = '';
+          originalQuestions = [];
+          document.getElementById('exam-form').innerHTML = '';
+          document.getElementById('progress-bar').style.width = '0';
+          document.getElementById('timer').innerHTML = '<i class="fas fa-clock"></i> 已用时: 00:00';
+          document.getElementById('final-time').textContent = "";
+          
+          // 回到题库选择界面
+          examContent.classList.add('hidden');
+          subjectSelection.classList.remove('hidden');
+          questionCountInput.value = '';
+          countErrorMessage.style.display = 'none';
+      });
+      
+      // "错题重新测试"按钮：从错题集重新生成考试
+      document.getElementById('retry-incorrect-btn').addEventListener('click', function() {
+          const incorrectQuestions = JSON.parse(sessionStorage.getItem('incorrectQuestions') || '[]');
+          if (incorrectQuestions.length === 0) {
+              alert('没有错题可供重新测试！');
+              return;
+          }
+          
+          clearInterval(timerInterval);
+          document.getElementById('exam-form').style.display = 'block';
+          document.getElementById('submit-btn').style.display = 'block';
+          document.getElementById('results').style.display = 'none';
+          
+          // 直接使用错题集，不再调用洗牌算法
+          userAnswers = {};
+          results = {};
+          shuffledQuestions = [...incorrectQuestions]; // 使用错题集的副本
+          
+          // 更新模式显示
+          let subjectName = '';
+          switch(currentSubject) {
+              case 'maogai': subjectName = '毛概'; break;
+              case 'xigai': subjectName = '习概'; break;
+              case 'computer': subjectName = '计算机组成原理'; break;
+              default: subjectName = '未知';
+          }
+          if (currentMode === 'practice') {
+              currentModeDisplay.innerHTML = `<i class="fas fa-book"></i> 练习模式 - ${subjectName}错题重测`;
+              currentModeDisplay.style.color = '#e74c3c';
+          } else {
+              currentModeDisplay.innerHTML = `<i class="fas fa-clipboard-check"></i> 考试模式 - ${subjectName}错题重测`;
+              currentModeDisplay.style.color = '#e74c3c';
+          }
+          
+          // 开始计时
+          startTime = Date.now();
+          timerInterval = setInterval(updateElapsedTime, 1000);
+          
+          // 清空旧的考试表单和进度条
+          document.getElementById('exam-form').innerHTML = '';
+          document.getElementById('progress-bar').style.width = '0';
+          document.getElementById('timer').innerHTML = '<i class="fas fa-clock"></i> 已用时: 00:00';
+          
+          // 生成错题题目
+          const examForm = document.getElementById('exam-form');
+          shuffledQuestions.forEach((q, index) => {
+              const questionDiv = document.createElement('div');
+              questionDiv.className = 'question fade-in';
+              questionDiv.id = `question-${q.id}`;
+              
+              let optionsHtml = '';
+              q.options.forEach(option => {
+                  const optionLetter = option.charAt(0);
+                  optionsHtml += `
+                      <div class="option" data-option="${optionLetter}">
+                          <label>
+                              <input type="radio" name="question-${q.id}" value="${optionLetter}">
+                              ${option}
+                          </label>
+                      </div>
+                  `;
+              });
+              
+              questionDiv.innerHTML = `
+                  <div class="question-title">
+                      <span class="question-number">${index + 1}. </span>
+                      ${q.question}
+                  </div>
+                  <div class="options">
+                      ${optionsHtml}
+                  </div>
+                  <div class="answer-feedback" id="feedback-${q.id}"></div>
+              `;
+              examForm.appendChild(questionDiv);
+          });
+          
+          // 如果是练习模式，添加选项点击事件监听
+          if (currentMode === 'practice') {
+              document.querySelectorAll('.option').forEach(option => {
+                  option.addEventListener('click', handlePracticeModeSelection);
+              });
+          }
+          
+          // 显示错题重测的提示信息
+          const noteDiv = document.createElement('div');
+          noteDiv.style.textAlign = 'center';
+          noteDiv.style.padding = '10px';
+          noteDiv.style.marginBottom = '20px';
+          noteDiv.style.backgroundColor = 'rgba(231, 76, 60, 0.1)';
+          noteDiv.style.borderRadius = '5px';
+          noteDiv.style.fontWeight = 'bold';
+          noteDiv.style.color = '#e74c3c';
+          noteDiv.innerHTML = `<i class="fas fa-exclamation-circle"></i> 当前正在进行错题重测，共 ${shuffledQuestions.length} 道题`;
+          examForm.insertBefore(noteDiv, examForm.firstChild);
+          
+          // 自动滚动到第一题
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+      
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+          btn.addEventListener('click', function() {
+              document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+              this.classList.add('active');
+              displayResults(this.getAttribute('data-filter'));
+          });
+      });
+  </script>
+</body>
+</html>
