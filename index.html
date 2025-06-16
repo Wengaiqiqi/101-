@@ -320,10 +320,102 @@
         color: #27ae60;
         border-left: 4px solid #27ae60;
     }
+    .answer-feedback.partial {
+        background-color: rgba(243, 156, 18, 0.15);
+        color: #f39c12;
+        border-left: 4px solid #f39c12;
+    }
     .answer-feedback.incorrect {
         background-color: rgba(231, 76, 60, 0.15);
         color: #e74c3c;
         border-left: 4px solid #e74c3c;
+    }
+    
+    .answer-feedback.partial {
+        background-color: rgba(243, 156, 18, 0.15);
+        color: #f39c12;
+        border-left: 4px solid #f39c12;
+    }
+    
+    /* 多选题样式 */
+    .question-type {
+        display: inline-block;
+        background-color: #3498db;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        margin-right: 8px;
+        vertical-align: middle;
+    }
+    
+    .answer-summary {
+        margin-top: 15px;
+        padding: 10px;
+        background-color: rgba(52, 152, 219, 0.1);
+        border-radius: 6px;
+        font-size: 0.9rem;
+    }
+    
+    .answer-summary .user-answer {
+        margin-bottom: 5px;
+        color: #7f8c8d;
+    }
+    
+    .answer-summary .correct-answer {
+        color: #27ae60;
+        font-weight: 600;
+    }
+    
+    /* 结果页面题目状态样式 */
+    .question.correct {
+        border-left: 4px solid #27ae60;
+        background-color: rgba(46, 204, 113, 0.05);
+    }
+    
+    .question.partial {
+        border-left: 4px solid #f39c12;
+        background-color: rgba(243, 156, 18, 0.05);
+    }
+    
+    .question.incorrect {
+        border-left: 4px solid #e74c3c;
+        background-color: rgba(231, 76, 60, 0.05);
+    }
+    
+    .status.correct {
+        color: #27ae60;
+        font-weight: 600;
+    }
+    
+    .status.partial {
+        color: #f39c12;
+        font-weight: 600;
+    }
+    
+    .status.incorrect {
+        color: #e74c3c;
+        font-weight: 600;
+    }
+    
+    /* 选项状态样式 */
+    .option.correct {
+        background-color: rgba(46, 204, 113, 0.15);
+        color: #27ae60;
+        border: 1px solid #27ae60;
+    }
+    
+    .option.incorrect {
+        background-color: rgba(231, 76, 60, 0.15);
+        color: #e74c3c;
+        border: 1px solid #e74c3c;
+    }
+    
+    .option.missed {
+        background-color: rgba(243, 156, 18, 0.15);
+        color: #f39c12;
+        border: 1px solid #f39c12;
+        border-style: dashed;
     }
     /* 结果页面样式优化 */
     .result-summary {
@@ -6310,22 +6402,30 @@
               questionDiv.className = 'question fade-in';
               questionDiv.id = `question-${q.id}`;
               
+              // 判断是否为多选题（答案包含空格）
+              const isMultipleChoice = q.answer && q.answer.includes(' ');
+              const inputType = isMultipleChoice ? 'checkbox' : 'radio';
+              const inputName = `question-${q.id}`;
+              
               let optionsHtml = '';
               q.options.forEach(option => {
                   const optionLetter = option.charAt(0);
                   optionsHtml += `
                       <div class="option" data-option="${optionLetter}">
                           <label>
-                              <input type="radio" name="question-${q.id}" value="${optionLetter}">
+                              <input type="${inputType}" name="${inputName}" value="${optionLetter}">
                               ${option}
                           </label>
                       </div>
                   `;
               });
               
+              const questionTypeLabel = isMultipleChoice ? '<span class="question-type">[多选题]</span>' : '';
+              
               questionDiv.innerHTML = `
                   <div class="question-title">
                       <span class="question-number">${index + 1}. </span>
+                      ${questionTypeLabel}
                       ${q.question}
                   </div>
                   <div class="options">
@@ -6357,26 +6457,89 @@
           // 查找对应的题目和正确答案
           const question = shuffledQuestions.find(q => q.id === questionId);
           const correctAnswer = question.answer;
+          const isMultipleChoice = correctAnswer && correctAnswer.includes(' ');
           
-          // 保存用户答案
-          userAnswers[questionId] = selectedOption;
-          
-          // 更新UI：标记所有选项
-          questionDiv.querySelectorAll('.option').forEach(opt => {
-              opt.classList.remove('selected');
-              if (opt.dataset.option === selectedOption) {
-                  opt.classList.add('selected');
+          if (isMultipleChoice) {
+              // 多选题逻辑
+              const checkbox = optionDiv.querySelector('input[type="checkbox"]');
+              
+              // 切换复选框状态
+              checkbox.checked = !checkbox.checked;
+              
+              // 更新UI
+              if (checkbox.checked) {
+                  optionDiv.classList.add('selected');
+              } else {
+                  optionDiv.classList.remove('selected');
               }
-          });
-          
-          // 显示反馈
-          feedbackDiv.style.display = 'block';
-          if (selectedOption === correctAnswer) {
-              feedbackDiv.className = 'answer-feedback correct';
-              feedbackDiv.innerHTML = `<i class="fas fa-check-circle"></i> 正确！答案是：${correctAnswer}`;
+              
+              // 收集所有选中的选项
+              const selectedOptions = [];
+              questionDiv.querySelectorAll('input[type="checkbox"]:checked').forEach(input => {
+                  selectedOptions.push(input.value);
+              });
+              
+              // 保存用户答案（多选答案用空格分隔）
+              userAnswers[questionId] = selectedOptions.sort().join(' ');
+              
+              // 显示反馈（只有选择了选项才显示）
+              if (selectedOptions.length > 0) {
+                  feedbackDiv.style.display = 'block';
+                  const userAnswerStr = selectedOptions.sort().join(' ');
+                  const correctAnswerArray = correctAnswer.split(' ').sort();
+                  const correctAnswerStr = correctAnswerArray.join(' ');
+                  
+                  if (userAnswerStr === correctAnswerStr) {
+                      // 完全正确 - 显示完整答案
+                      feedbackDiv.className = 'answer-feedback correct';
+                      feedbackDiv.innerHTML = `<i class="fas fa-check-circle"></i> 全部正确！答案是：${correctAnswer}`;
+                  } else {
+                      // 检查是否有部分正确
+                      const correctCount = selectedOptions.filter(option => correctAnswerArray.includes(option)).length;
+                      const incorrectCount = selectedOptions.filter(option => !correctAnswerArray.includes(option)).length;
+                      
+                      if (incorrectCount > 0) {
+                          // 有错误选项 - 显示错误
+                          feedbackDiv.className = 'answer-feedback incorrect';
+                          feedbackDiv.innerHTML = `<i class="fas fa-times-circle"></i> 答案错误！有选项选择错误`;
+                      } else if (correctCount > 0 && correctCount < correctAnswerArray.length) {
+                          // 部分正确，但未选全 - 只提示部分正确，不显示完整答案
+                          feedbackDiv.className = 'answer-feedback partial';
+                          feedbackDiv.innerHTML = `<i class="fas fa-info-circle"></i> 部分正确！还有其他正确选项未选择`;
+                      } else {
+                          // 完全错误
+                          feedbackDiv.className = 'answer-feedback incorrect';
+                          feedbackDiv.innerHTML = `<i class="fas fa-times-circle"></i> 答案错误！请重新选择`;
+                      }
+                  }
+              } else {
+                  feedbackDiv.style.display = 'none';
+              }
           } else {
-              feedbackDiv.className = 'answer-feedback incorrect';
-              feedbackDiv.innerHTML = `<i class="fas fa-times-circle"></i> 错误！正确答案是：${correctAnswer}`;
+              // 单选题逻辑（保持原有逻辑）
+              const radio = optionDiv.querySelector('input[type="radio"]');
+              radio.checked = true;
+              
+              // 保存用户答案
+              userAnswers[questionId] = selectedOption;
+              
+              // 更新UI：标记所有选项
+              questionDiv.querySelectorAll('.option').forEach(opt => {
+                  opt.classList.remove('selected');
+                  if (opt.dataset.option === selectedOption) {
+                      opt.classList.add('selected');
+                  }
+              });
+              
+              // 显示反馈
+              feedbackDiv.style.display = 'block';
+              if (selectedOption === correctAnswer) {
+                  feedbackDiv.className = 'answer-feedback correct';
+                  feedbackDiv.innerHTML = `<i class="fas fa-check-circle"></i> 正确！答案是：${correctAnswer}`;
+              } else {
+                  feedbackDiv.className = 'answer-feedback incorrect';
+                  feedbackDiv.innerHTML = `<i class="fas fa-times-circle"></i> 错误！正确答案是：${correctAnswer}`;
+              }
           }
           
           updateProgressBar();
@@ -6410,17 +6573,45 @@
               (seconds < 10 ? "0" + seconds : seconds);
           
           let correct = 0;
+          let partiallyCorrect = 0;
           let incorrectQuestions = []; // 收集错题
           shuffledQuestions.forEach(q => {
-              const isCorrect = (userAnswers[q.id] === q.answer);
+              const userAnswer = userAnswers[q.id] || '';
+              let isCorrect = false;
+              let isPartiallyCorrect = false;
+              
+              // 处理多选题和单选题的答案比较
+              if (q.answer && q.answer.includes(' ')) {
+                  // 多选题：计算完全正确、部分正确
+                  const correctAnswerArray = q.answer.split(' ').sort();
+                  const userAnswerArray = userAnswer.split(' ').filter(a => a).sort();
+                  
+                  isCorrect = JSON.stringify(correctAnswerArray) === JSON.stringify(userAnswerArray);
+                  
+                  if (!isCorrect && userAnswerArray.length > 0) {
+                      // 计算交集（选对的选项）
+                      const userSet = new Set(userAnswerArray);
+                      const correctSet = new Set(correctAnswerArray);
+                      const intersection = [...userSet].filter(x => correctSet.has(x));
+                      isPartiallyCorrect = intersection.length > 0;
+                  }
+              } else {
+                  // 单选题：直接比较
+                  isCorrect = (userAnswer === q.answer);
+              }
+              
               results[q.id] = {
                   question: q,
-                  userAnswer: userAnswers[q.id] || '',
-                  isCorrect: isCorrect
+                  userAnswer: userAnswer,
+                  isCorrect: isCorrect,
+                  isPartiallyCorrect: isPartiallyCorrect
               };
               
               if (isCorrect) {
                   correct++;
+              } else if (isPartiallyCorrect) {
+                  partiallyCorrect++;
+                  incorrectQuestions.push(q); // 部分正确也算错题，需要加强练习
               } else {
                   incorrectQuestions.push(q); // 添加到错题集
               }
@@ -6479,14 +6670,30 @@
           resultDetails.innerHTML = '';
           Object.values(results).forEach((result, index) => {
               if (filter === 'incorrect' && result.isCorrect) return;
+              
+              // 确定题目状态
+              let statusClass = 'incorrect';
+              let statusText = '<i class="fas fa-times"></i> 错误';
+              let divClass = 'incorrect';
+              
+              if (result.isCorrect) {
+                  statusClass = 'correct';
+                  statusText = '<i class="fas fa-check"></i> 全部正确';
+                  divClass = 'correct';
+              } else if (result.isPartiallyCorrect) {
+                  statusClass = 'partial';
+                  statusText = '<i class="fas fa-exclamation-triangle"></i> 部分正确';
+                  divClass = 'partial';
+              }
+              
               const resultDiv = document.createElement('div');
-              resultDiv.className = `question fade-in ${result.isCorrect ? 'correct' : 'incorrect'}`;
+              resultDiv.className = `question fade-in ${divClass}`;
               resultDiv.innerHTML = `
                   <div class="question-title">
                       <span class="question-number">${index + 1}. </span>
                       ${result.question.question}
-                      <span class="status ${result.isCorrect ? 'correct' : 'incorrect'}">
-                          ${result.isCorrect ? '<i class="fas fa-check"></i> 正确' : '<i class="fas fa-times"></i> 错误'}
+                      <span class="status ${statusClass}">
+                          ${statusText}
                       </span>
                   </div>
                   <div class="options">
@@ -6495,10 +6702,21 @@
                           let className = '';
                           let icon = '';
                           
-                          if (letter === result.question.answer) {
+                          // 判断是否为多选题
+                          const isMultipleChoice = result.question.answer && result.question.answer.includes(' ');
+                          const correctAnswers = isMultipleChoice ? result.question.answer.split(' ') : [result.question.answer];
+                          const userAnswers = result.userAnswer ? (isMultipleChoice ? result.userAnswer.split(' ') : [result.userAnswer]) : [];
+                          
+                          const isCorrectAnswer = correctAnswers.includes(letter);
+                          const isUserAnswer = userAnswers.includes(letter);
+                          
+                          if (isCorrectAnswer && isUserAnswer) {
                               className = 'correct';
                               icon = '<i class="fas fa-check-circle"></i>';
-                          } else if (letter === result.userAnswer && letter !== result.question.answer) {
+                          } else if (isCorrectAnswer && !isUserAnswer) {
+                              className = 'missed';
+                              icon = '<i class="fas fa-circle"></i>';
+                          } else if (!isCorrectAnswer && isUserAnswer) {
                               className = 'incorrect';
                               icon = '<i class="fas fa-times-circle"></i>';
                           }
@@ -6509,6 +6727,10 @@
                               </div>
                           `;
                       }).join('')}
+                      <div class="answer-summary">
+                          <div class="user-answer">你的答案: ${result.userAnswer || '未作答'}</div>
+                          <div class="correct-answer">正确答案: ${result.question.answer}</div>
+                      </div>
                   </div>
               `;
               resultDetails.appendChild(resultDiv);
@@ -6517,16 +6739,39 @@
       
       // 监听考试模式下的答案选项变化
       document.addEventListener('change', function(e) {
-          if (currentMode === 'exam' && e.target.type === 'radio' && e.target.name.startsWith('question-')) {
+          if (currentMode === 'exam' && (e.target.type === 'radio' || e.target.type === 'checkbox') && e.target.name.startsWith('question-')) {
               const questionId = parseInt(e.target.name.replace('question-', ''));
-              userAnswers[questionId] = e.target.value;
-              
-              // 更新选项UI
               const questionDiv = e.target.closest('.question');
-              questionDiv.querySelectorAll('.option').forEach(opt => {
-                  opt.classList.remove('selected');
-              });
-              e.target.closest('.option').classList.add('selected');
+              
+              if (e.target.type === 'radio') {
+                  // 单选题逻辑
+                  userAnswers[questionId] = e.target.value;
+                  
+                  // 更新选项UI
+                  questionDiv.querySelectorAll('.option').forEach(opt => {
+                      opt.classList.remove('selected');
+                  });
+                  e.target.closest('.option').classList.add('selected');
+              } else if (e.target.type === 'checkbox') {
+                  // 多选题逻辑
+                  const selectedOptions = [];
+                  questionDiv.querySelectorAll('input[type="checkbox"]:checked').forEach(input => {
+                      selectedOptions.push(input.value);
+                  });
+                  
+                  // 保存用户答案（多选答案用空格分隔）
+                  userAnswers[questionId] = selectedOptions.sort().join(' ');
+                  
+                  // 更新选项UI
+                  questionDiv.querySelectorAll('.option').forEach(opt => {
+                      const checkbox = opt.querySelector('input[type="checkbox"]');
+                      if (checkbox && checkbox.checked) {
+                          opt.classList.add('selected');
+                      } else {
+                          opt.classList.remove('selected');
+                      }
+                  });
+              }
               
               updateProgressBar();
           }
