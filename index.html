@@ -268,29 +268,41 @@
     }
     /* 模式选择样式 */
     .mode-btn-container {
-        display: flex;
-        justify-content: center;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 20px;
         margin: 30px 0;
+        max-width: 1000px;
+        margin-left: auto;
+        margin-right: auto;
     }
     .mode-btn {
-        padding: 15px 30px;
-        font-size: 18px;
-        border-radius: 10px;
+        padding: 20px 15px;
+        font-size: 16px;
+        border-radius: 12px;
         border: none;
         cursor: pointer;
         transition: all 0.3s;
-        width: 180px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        min-height: 120px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         font-weight: 500;
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 10px;
+        justify-content: center;
+        gap: 8px;
+        text-align: center;
     }
     .mode-btn i {
-        font-size: 24px;
-        margin-bottom: 5px;
+        font-size: 28px;
+        margin-bottom: 8px;
+    }
+    .mode-btn small {
+        font-size: 12px;
+        opacity: 0.9;
+        line-height: 1.3;
+        margin-top: 5px;
+        max-width: 90%;
     }
     .mode-btn.exam-mode {
         background: linear-gradient(135deg, #3498db, #2980b9);
@@ -451,6 +463,15 @@
         vertical-align: middle;
         margin-right: 8px;
     }
+    
+    /* 中等屏幕尺寸优化 */
+    @media (max-width: 1024px) and (min-width: 769px) {
+        .mode-btn-container {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+        }
+    }
+    
     /* 响应式设计 */
     @media (max-width: 768px) {
         body {
@@ -460,8 +481,20 @@
             padding: 15px;
         }
         .mode-btn-container {
-            flex-direction: column;
-            align-items: center;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .mode-btn {
+            min-height: 100px;
+            padding: 15px 10px;
+            font-size: 14px;
+        }
+        .mode-btn i {
+            font-size: 24px;
+        }
+        .mode-btn small {
+            font-size: 11px;
         }
         .result-summary {
             flex-direction: column;
@@ -593,7 +626,12 @@
           <button id="physics-btn" class="mode-btn exam-mode">
               <i class="fas fa-atom"></i>
               物理题库
-              <small>物理</small>
+              <small>力学、电磁学、热学、光学等</small>
+          </button>
+          <button id="ml-btn" class="mode-btn practice-mode">
+              <i class="fas fa-brain"></i>
+              机器学习题库
+              <small>监督学习、无监督学习、深度学习等</small>
           </button>
       </div>
   </div>
@@ -6526,6 +6564,229 @@ physics: [
         ],
         "answer": "C"
     }
+],
+
+ml: [
+{
+"id": 1,
+"question": "机器学习这个术语是由谁定义的？",
+"options": [
+"A. James Gosling",
+"B. Arthur Samuel",
+"C. Guido van Rossum",
+"D. 以上都不是"
+],
+"answer": "B"
+},
+{
+"id": 2,
+"question": "向量 x=[1,2,3,4,-9,0] 的 L1 范数是多少？",
+"options": [
+"A. 19",
+"B. 1",
+"C. 6",
+"D. √111"
+],
+"answer": "A"
+},
+{
+"id": 3,
+"question": "关于特征选择，下列对 Ridge 回归和 Lasso 回归说法正确的是？",
+"options": [
+"A. Lasso 回归适用于特征选择",
+"B. Ridge 回归适用于特征选择",
+"C. 两个都适用于特征选择",
+"D. 以上说法都不对"
+],
+"answer": "A"
+},
+{
+"id": 4,
+"question": "假设会开车的本科生比例是 15%，会开车的研究生比例是 23%。若在某大学研究生占学生比例未知（结合选项及知识推测 ），则会开车的学生是研究生的概率大概是多少？",
+"options": [
+"A. 16.6%",
+"B. 80%",
+"C. 23%",
+"D. 27.71%"
+],
+"answer": "D"
+},
+{
+"id": 5,
+"question": "以下关于偏差和方差说法正确的是？",
+"options": [
+"A. 方差描述的是预测值与真实值之间的差别",
+"B. 偏差描述的是预测值的变化范围",
+"C. 获取更多的训练数据可解决高方差的问题",
+"D. 获取更多的特征能解决高方差的问题"
+],
+"answer": "C"
+},
+{
+"id": 6,
+"question": "关于余弦相似度，不正确的是？",
+"options": [
+"A. 余弦相似度的范围为 [-1,1]",
+"B. 余弦相似度的结果和向量的长度无关",
+"C. 余弦相似度为 - 1 时候，两个向量完全不相关",
+"D. 余弦相似度为 1 的时候，两个向量完全相关"
+],
+"answer": "C"
+},
+{
+"id": 7,
+"question": "以下哪种说法是错误的？",
+"options": [
+"A. 信息增益 = 信息熵 - 条件熵",
+"B. 一个系统越是混乱，随机变量的不确定性就越大，信息熵就越高",
+"C. 一个系统越是有序，信息熵就越低",
+"D. 中国足球队战胜巴西足球队的信息熵要小于中国乒乓球队战胜巴西乒乓球队的信息熵"
+],
+"answer": "D"
+},
+{
+"id": 8,
+"question": "关于聚类的说法正确的有？",
+"options": [
+"A. 其目的是根据过去的观测结果来预测新样本的标签为聚类",
+"B. 聚类的算法训练样本往往都不含有标签",
+"C. 聚类算法对于孤立的野值不敏感",
+"D. 聚类算法的更新步骤可解释性不强"
+],
+"answer": "B"
+},
+{
+"id": 9,
+"question": "以下关于降维的说法不正确的是？",
+"options": [
+"A. 降维是将训练样本从高维空间转换到低维空间",
+"B. 降维不会对数据产生损伤",
+"C. 通过降维可以更有效地发掘有意义的数据结构",
+"D. 降维将有助于实现数据可视化"
+],
+"answer": "B"
+},
+{
+"id": 10,
+"question": "关于 BP 算法信号向前传播的说法正确的是？",
+"options": [
+"A. BP 算法信号传播的顺序是输出层、隐层、输入层",
+"B. BP 算法信号向前传播的计算量跟输入层神经元数目无关",
+"C. BP 算法在计算正向传播输出值时需要考虑激活函数",
+"D. BP 算法只有在隐层才有激活函数"
+],
+"answer": "C"
+},
+{
+"id": 11,
+"question": "下列哪些学习问题不属于监督学习？",
+"options": [
+"A. 聚类",
+"B. 降维",
+"C. 分类",
+"D. 回归"
+],
+"answer": "A B"
+},
+{
+"id": 12,
+"question": "欠拟合的处理主要有哪些方式：",
+"options": [
+"A. 添加新特征",
+"B. 增加模型复杂度",
+"C. 减小正则化系数",
+"D. 增大正则化系数"
+],
+"answer": "A B C"
+},
+{
+"id": 13,
+"question": "下面哪些是分类算法？",
+"options": [
+"A. 根据肿瘤的体积、患者的年龄来判断良性或恶性",
+"B. 根据用户的年龄、职业、存款数量来判断信用卡是否会违约？",
+"C. 身高 1.85m，体重 100kg 的男人穿什么尺码的 T 恤？",
+"D. 根据房屋大小、卫生间数量等特征预估房价"
+],
+"answer": "A B"
+},
+{
+"id": 14,
+"question": "评价指标中，精确率 (Precision) 的计算需要哪些数值？",
+"options": [
+"A. TP",
+"B. TN",
+"C. FP",
+"D. FN"
+],
+"answer": "A C"
+},
+{
+"id": 15,
+"question": "影响 KNN 算法效果的主要因素？",
+"options": [
+"A. K 的值",
+"B. 距离度量方式",
+"C. 决策规则",
+"D. 最邻近数据的距离"
+],
+"answer": "A B C"
+},
+{
+"id": 16,
+"question": "关于剪枝，以下算法正确的是：",
+"options": [
+"A. 决策树剪枝的基本策略有预剪枝和后剪枝",
+"B. ID3 算法没有剪枝操作",
+"C. 剪枝是防止过拟合的手段",
+"D. C4.5 算法没有剪枝操作"
+],
+"answer": "A B C"
+},
+{
+"id": 17,
+"question": "关于 DBSCAN 算法，以下说法正确的是？",
+"options": [
+"A. DBSCAN 算法是一种基于划分的聚类算法",
+"B. DBSCAN 算法将点分成核心点、边界点和噪音点三类",
+"C. DBSCAN 算法是一种基于密度的聚类算法",
+"D. DBSCAN 算法需要在指定簇的个数"
+],
+"answer": "B C"
+},
+{
+"id": 18,
+"question": "下面属于降维常用的技术的有：",
+"options": [
+"A. 主成分分析",
+"B. 特征提取",
+"C. 奇异值分解",
+"D. 离散化"
+],
+"answer": "A C"
+},
+{
+"id": 19,
+"question": "关于 BP 算法优点说法正确的是？",
+"options": [
+"A. BP 算法能够自适应学习",
+"B. BP 算法有很强的非线性映射能力",
+"C. BP 算法反向传播采用链式法则，推导过程严谨",
+"D. BP 算法泛化能力不强"
+],
+"answer": "A B C"
+},
+{
+"id": 20,
+"question": "聚类的代表算法有？",
+"options": [
+"A. PCA",
+"B. SVD",
+"C. DBSCAN",
+"D. K - means"
+],
+"answer": "C D"
+}
 ]
 
       };
@@ -6591,6 +6852,7 @@ physics: [
       const xigaiBtn = document.getElementById('xigai-btn');
       const computerBtn = document.getElementById('computer-btn');
       const physicsBtn = document.getElementById('physics-btn');
+      const mlBtn = document.getElementById('ml-btn');
 
       maogaiBtn.addEventListener('click', function() {
           currentSubject = 'maogai';
@@ -6624,6 +6886,14 @@ physics: [
           updateQuestionCountDisplay();
       });
 
+      mlBtn.addEventListener('click', function() {
+          currentSubject = 'ml';
+          originalQuestions = questionBanks.ml;
+          subjectSelection.classList.add('hidden');
+          modeSelection.classList.remove('hidden');
+          updateQuestionCountDisplay();
+      });
+
       // 更新题目数量显示
       function updateQuestionCountDisplay() {
           const countInfo = document.querySelector('#question-count-selection p');
@@ -6635,6 +6905,7 @@ physics: [
                   case 'xigai': subjectName = '习概'; break;
                   case 'computer': subjectName = '计算机组成原理'; break;
                   case 'physics': subjectName = '物理'; break;
+                  case 'ml': subjectName = '机器学习'; break;
                   default: subjectName = '未知';
               }
               const maxCount = originalQuestions.length;
@@ -6721,6 +6992,7 @@ physics: [
               case 'xigai': subjectName = '习概'; break;
               case 'computer': subjectName = '计算机组成原理'; break;
               case 'physics': subjectName = '物理'; break;
+              case 'ml': subjectName = '机器学习'; break;
               default: subjectName = '未知';
           }
           const modeIcon = currentMode === 'practice' ? '<i class="fas fa-book"></i>' : '<i class="fas fa-clipboard-check"></i>';
@@ -7199,6 +7471,7 @@ physics: [
               case 'xigai': subjectName = '习概'; break;
               case 'computer': subjectName = '计算机组成原理'; break;
               case 'physics': subjectName = '物理'; break;
+              case 'ml': subjectName = '机器学习'; break;
               default: subjectName = '未知';
           }
           if (currentMode === 'practice') {
